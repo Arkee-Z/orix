@@ -67,7 +67,7 @@
 	color-scheme: dark;
 
 	/* the desk */
-	--desk: #0c0a09;
+	--desk: #2a1a10;
 	--cover: #241b15;
 	--cover-hi: #3d2e22;
 
@@ -130,9 +130,18 @@ body {
 	overflow: hidden;
 	background-color: var(--desk);
 	background-image:
-		radial-gradient(70% 55% at 16% -4%, rgba(126, 89, 58, 0.18), transparent 68%),
-		radial-gradient(55% 45% at 88% 104%, rgba(96, 64, 44, 0.14), transparent 70%),
-		radial-gradient(120% 90% at 50% 45%, transparent 36%, rgba(0, 0, 0, 0.6) 100%);
+		radial-gradient(62% 50% at 16% -6%, rgba(255, 205, 150, 0.12), transparent 68%),
+		radial-gradient(120% 92% at 50% 45%, transparent 32%, rgba(6, 3, 2, 0.62) 100%),
+		url("/textures/wood-desk.webp");
+	background-size:
+		auto,
+		auto,
+		cover;
+	background-position:
+		center,
+		center,
+		50% 48%;
+	background-repeat: no-repeat;
 	color: var(--ink);
 	font-family: var(--font-mono);
 	font-size: 15px;
@@ -154,7 +163,7 @@ body::before {
 	pointer-events: none;
 	background-image: var(--noise);
 	background-size: 180px 180px;
-	opacity: 0.05;
+	opacity: 0.07;
 	mix-blend-mode: overlay;
 }
 
