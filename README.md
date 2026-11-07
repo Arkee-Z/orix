@@ -1,16 +1,17 @@
 # Orix Journal
 
 A small personal blog for Gene Max Zhang, set like a book on a dark green
-baize desk. Warm paper, a blind-tooled cover, a stitched spine, and five index
-tabs on the right edge of the page. Built with Astro and plain CSS — no client-side
-framework, no theme switcher, no analytics.
+baize desk. Warm paper, a blind-tooled cover, a stitched spine, and five paper
+index tabs pasted along the page's fore-edge. Built with Astro and plain CSS — no
+client-side framework, no theme switcher, no analytics.
 
 ## The idea
 
 Most blogs look like feeds. This one looks like a bound volume: a running head
 at the top of the page, a folio at the bottom, a red seal for section marks, and
-navigation rendered as paper tabs sticking out of the right edge. The page
-scrolls inside the cover, so the tabs stay in your hand while you read.
+navigation rendered as vertical paper tabs pasted along the page's inner
+fore-edge. The page scrolls inside the cover, so the tabs stay in your hand while
+you read.
 
 Content is written in Markdown and published as static HTML.
 
@@ -40,7 +41,7 @@ astro dev stop
 src/
 ├─ components/
 │  ├─ SectionTitle.astro   # § section headings with optional side note
-│  └─ Tabs.astro           # right-edge index tabs + active state
+│  └─ Tabs.astro           # paper index tabs pasted to the page edge
 ├─ content/
 │  └─ writing/             # Markdown entries (one file per post)
 ├─ content.config.ts       # writing collection schema
@@ -94,15 +95,17 @@ full essays.
   seal marks, and five low-saturation tab colors.
 - **Desk**: deep green baize built from layered CSS gradients and a fine woven
   grain, lit from the upper left and vignetted so the book stays the focus.
-- **Book details**: CSS gradients for the leather, an SVG noise grain for paper,
-  stitched gutter, blind-tooled cover border, running head, folio, and index
-  tabs.
+- **Paper**: a generated dark paper-fibre texture, a shadowed gutter curve, a
+  worn corner, and a layered page block along the fore-edge.
+- **Book details**: CSS gradients for the leather, stitched gutter, blind-tooled
+  cover border, running head, folio, and vertical paper tabs pasted inside the
+  page's right margin.
 - **One layout per page**: a centred title page, a contents list, a
   marginalia-driven entry, a notes column, a single page spread (About), and a
   narrow correspondence letter. Nothing repeats unless it is book furniture
   (running head, folio, tabs).
 - **Responsive**: below 1120px the spread becomes a single column; below 820px
-  the tabs turn into narrow vertical dividers so the page keeps its width.
+  the tabs narrow further but stay pasted inside the page margin.
 - **Accessibility**: skip link, semantic landmarks, focusable scroll region,
   `aria-current` on the active tab, visible focus rings, and reduced-motion
   support.
