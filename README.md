@@ -1,8 +1,8 @@
 # Orix Journal
 
-A small personal blog for Gene Max Zhang, set like a book on a dark walnut
-desk. Warm paper, a blind-tooled cover, a stitched spine, and five index tabs on
-the right edge of the page. Built with Astro and plain CSS — no client-side
+A small personal blog for Gene Max Zhang, set like a book on a dark green
+baize desk. Warm paper, a blind-tooled cover, a stitched spine, and five index
+tabs on the right edge of the page. Built with Astro and plain CSS — no client-side
 framework, no theme switcher, no analytics.
 
 ## The idea
@@ -92,9 +92,8 @@ full essays.
   in `public/fonts/` (SIL Open Font License) and preloaded by the layout.
 - **Palette**: warm near-black cover, dark brown paper, muted bone ink, vermilion
   seal marks, and five low-saturation tab colors.
-- **Desk**: a generated end-grain walnut slab in
-  `public/textures/wood-desk.webp`, lit from the upper left and vignetted so the
-  book stays the focus.
+- **Desk**: deep green baize built from layered CSS gradients and a fine woven
+  grain, lit from the upper left and vignetted so the book stays the focus.
 - **Book details**: CSS gradients for the leather, an SVG noise grain for paper,
   stitched gutter, blind-tooled cover border, running head, folio, and index
   tabs.
