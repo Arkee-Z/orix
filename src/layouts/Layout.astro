@@ -1,23 +1,101 @@
+---
+import "../styles/global.css";
+import Tabs from "../components/Tabs.astro";
+import { site } from "../data/site";
+
+interface Props {
+	title?: string;
+	section: string;
+	folio: string;
+	description?: string;
+	mainClass?: string;
+}
+
+const {
+	title,
+	section,
+	folio,
+	description = site.description,
+	mainClass,
+} = Astro.props;
+
+const pageTitle = title
+	? `${title} — ${site.imprint}`
+	: `${site.imprint} — A Journal of Code & Consequence`;
+---
+
+
 <!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="theme-color" content="#0c0a09" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
+		<meta name="description" content={description} />
+		<meta property="og:title" content={pageTitle} />
+		<meta property="og:description" content={description} />
+		<meta property="og:type" content="website" />
+		<meta name="twitter:card" content="summary" />
+		<title>{pageTitle}</title>
+		<link
+			rel="preload"
+			href="/fonts/plex-300.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+		<link
+			rel="preload"
+			href="/fonts/plex-400i.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+		<link
+			rel="preload"
+			href="/fonts/space-700.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
 	</head>
 	<body>
-		<slot />
+		<a class="skip-link" href="#main">Skip to the page</a>
+
+		<div class="stage">
+			<div class="book-wrap">
+				<Tabs />
+
+				<div class="book">
+					<div class="spine" aria-hidden="true">
+						<span class="band band-top"></span>
+						<span class="spine-year">{site.year}</span>
+						<span class="spine-title">Orix · A Journal of Code</span>
+						<span class="spine-mark">❦</span>
+						<span class="band band-bottom"></span>
+					</div>
+
+					<div class="page">
+						<div class="page-head">
+							<span class="rh-section">{section}</span>
+							<span class="rh-right">{site.imprint} · {site.volume}</span>
+						</div>
+
+						<main class:list={["leaf", mainClass]} id="main" tabindex="0">
+							<div class="leaf-inner">
+								<slot />
+							</div>
+						</main>
+
+						<div class="folio">
+							<span class="folio-left">{site.since} · {site.location}</span>
+							<span class="folio-right">Leaf {folio}</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 	</body>
 </html>
-
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>

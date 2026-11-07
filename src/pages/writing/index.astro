@@ -1,0 +1,51 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { site, formatDate, roman, pad } from "../../data/site";
+import { getPosts, postHref } from "../../lib/posts";
+
+const posts = await getPosts();
+const count = pad(posts.length);
+---
+
+<Layout title="Writing" section="Writing" folio="02">
+	<header class="page-head-block">
+		<p class="imprint">Section 02 / 05</p>
+		<h1 class="page-title">Writing</h1>
+		<p class="page-dek">
+			Long-form entries on terminals, tools, and the craft of building for the
+			web.
+		</p>
+	</header>
+
+	<div class="toc-year">
+		<span>{site.year}</span>
+		<span>{count} entries</span>
+	</div>
+
+	<ol class="toc">
+		{
+			posts.map((post, index) => (
+				<li class="toc-item">
+					<a class="toc-link" href={postHref(post)}>
+						<span class="toc-no">{roman(index + 1)}</span>
+						<span class="toc-main">
+							<span class="toc-title">{post.data.title}</span>
+							<span class="toc-leader" aria-hidden="true" />
+						</span>
+						<time class="toc-date" datetime={post.data.date.toISOString()}>
+							{formatDate(post.data.date)}
+						</time>
+						<span class="toc-sub">
+							<span class="tag">{post.data.tags.join(" / ")}</span>
+							<span class="sep" aria-hidden="true">·</span>
+							<span>{post.data.minutes} min read</span>
+						</span>
+						<span class="toc-summary">{post.data.summary}</span>
+					</a>
+				</li>
+			))
+		}
+	</ol>
+
+	<p class="end-mark">— fin —</p>
+</Layout>

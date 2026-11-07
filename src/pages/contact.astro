@@ -1,0 +1,84 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { site } from "../data/site";
+---
+
+<Layout
+	title="Contact"
+	section="Contact"
+	folio="05"
+	description="Write to Gene Max Zhang — correspondence, collaboration, and the occasional good bug report."
+>
+	<div class="letter-page">
+		<header class="page-head-block">
+			<p class="imprint">Section 05 / 05</p>
+			<h1 class="page-title">Contact</h1>
+			<p class="page-dek">
+				Systems, publishing tools, developer interfaces, and the occasional
+				good bug report.
+			</p>
+		</header>
+
+		<ul class="contact-list">
+			<li class="contact-row">
+				<svg viewBox="0 0 24 24" aria-hidden="true">
+					<path d="M12 21s7-5.4 7-11a7 7 0 1 0-14 0c0 5.6 7 11 7 11Z" />
+					<circle cx="12" cy="10" r="2.4" />
+				</svg>
+				<span>{site.location}</span>
+			</li>
+			<li class="contact-row">
+				<svg viewBox="0 0 24 24" aria-hidden="true">
+					<rect x="3" y="5" width="18" height="14" rx="1.5" />
+					<path d="m3.5 6.5 8.5 6 8.5-6" />
+				</svg>
+				<a href={`mailto:${site.email}`}>{site.email}</a>
+			</li>
+			<li class="contact-row">
+				<svg viewBox="0 0 24 24" class="icon-fill" aria-hidden="true">
+					<path
+						d="M12 .5C5.73.5.5 5.73.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.55v-2.1c-3.2.7-3.87-1.37-3.87-1.37-.52-1.33-1.28-1.68-1.28-1.68-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.68 0-1.25.45-2.28 1.19-3.08-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.12 3.05.74.8 1.18 1.83 1.18 3.08 0 4.41-2.7 5.38-5.27 5.67.42.36.79 1.08.79 2.18v3.23c0 .3.21.66.8.55A11.51 11.51 0 0 0 23.5 12C23.5 5.73 18.27.5 12 .5Z"
+					/>
+				</svg>
+				<a href={site.github} rel="me">{site.githubLabel}</a>
+			</li>
+			<li class="contact-row">
+				<svg viewBox="0 0 24 24" aria-hidden="true">
+					<circle cx="12" cy="12" r="9" />
+					<path d="M12 7v5l3.5 2" />
+				</svg>
+				<span>{site.timezone}</span>
+			</li>
+		</ul>
+
+		<div class="contact-note">
+			<span class="section-mark" aria-hidden="true">§</span>
+			<h2>A letter, not a form.</h2>
+			<p>
+				No contact form, no captcha, no chat bubble that pretends to be a
+				person. Just an address and a promise: I read everything, and answer in
+				the order the post arrives. If it is a bug, include the version and the
+				shortest reproduction you can bear to write.
+			</p>
+			<div class="contact-actions">
+				<a class="btn btn--accent" href={`mailto:${site.email}`}>
+					Write a letter <span class="arrow" aria-hidden="true">→</span>
+				</a>
+			</div>
+		</div>
+
+		<footer class="letter-foot">
+			<div class="letter-availability">
+				<span class="meta-label">Availability</span>
+				<p>
+					Open to interesting work — systems, publishing tools, developer
+					interfaces. Not open to growth-marketing partnerships, nor to software
+					that emails me on its own birthday.
+				</p>
+			</div>
+			<p class="fingerprint">
+				PGP · <span>3F2A 91C4 8E17 55B0 0D6C&nbsp; 7A41 9E38 22F5 C1D0 6B4A</span>
+			</p>
+		</footer>
+	</div>
+</Layout>

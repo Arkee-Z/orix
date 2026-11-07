@@ -1,46 +1,110 @@
-# Astro Starter Kit: Basics
+# Orix Journal
+
+A small personal blog for Gene Max Zhang, set like a book. Dark warm paper, a
+blind-tooled cover, a stitched spine, and five index tabs on the right edge of
+the page. Built with Astro and plain CSS — no client-side framework, no theme
+switcher, no analytics.
+
+## The idea
+
+Most blogs look like feeds. This one looks like a bound volume: a running head
+at the top of the page, a folio at the bottom, a red seal for section marks, and
+navigation rendered as paper tabs sticking out of the right edge. The page
+scrolls inside the cover, so the tabs stay in your hand while you read.
+
+Content is written in Markdown and published as static HTML.
+
+![The Orix Journal home page](docs/preview-desktop.jpg)
+
+## Running it
 
 ```sh
-npm create astro@latest -- --template basics
+npm install
+npm run dev        # http://localhost:4321
+npm run build      # static output in ./dist
+npm run preview    # preview the build
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+The dev server can also be managed in the background:
 
-## 🚀 Project Structure
+```sh
+astro dev --background
+astro dev status
+astro dev logs
+astro dev stop
+```
 
-Inside of your Astro project, you'll see the following folders and files:
+## Structure
 
 ```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
+src/
+├─ components/
+│  ├─ SectionTitle.astro   # § section headings with optional side note
+│  └─ Tabs.astro           # right-edge index tabs + active state
+├─ content/
+│  └─ writing/             # Markdown entries (one file per post)
+├─ content.config.ts       # writing collection schema
+├─ data/
+│  ├─ site.ts              # identity, nav, date helpers, roman numerals
+│  └─ notes.ts             # short field notes
+├─ layouts/
+│  └─ Layout.astro         # desk, book, spine, page, running head, folio
+├─ lib/
+│  └─ posts.ts             # collection helpers
+├─ pages/
+│  ├─ index.astro          # title page + selected entries
+│  ├─ writing/index.astro  # table of contents
+│  ├─ writing/[slug].astro # entry layout with marginalia
+│  ├─ notes.astro          # field notes with marginalia
+│  ├─ about.astro          # the only page spread: author / skills / projects
+│  ├─ contact.astro        # single-column letter
+│  └─ 404.astro
+└─ styles/
+   └─ global.css           # tokens, book shell, type, tabs, responsive
 ```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+## Writing an entry
 
-## 🧞 Commands
+Add a Markdown file to `src/content/writing/`:
 
-All commands are run from the root of the project, from a terminal:
+```md
+---
+title: "A Title"
+date: 2026-10-18
+summary: "One or two sentences for the index and meta tags."
+tags: ["Essay", "Craft"]
+minutes: 6
+---
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+Body text. The first paragraph gets a drop cap in the entry layout.
+```
 
-## 👀 Want to learn more?
+The file name becomes the slug (`/writing/<file-name>`). Entries are sorted by
+date, newest first; the home page lists the three most recent, the Writing tab
+holds the full contents.
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+Notes are plain data in `src/data/notes.ts` — short, dated fragments rather than
+full essays.
+
+## Design notes
+
+- **Type**: IBM Plex Mono for text, Space Mono for display. Both are self-hosted
+  in `public/fonts/` (SIL Open Font License) and preloaded by the layout.
+- **Palette**: warm near-black cover, dark brown paper, muted bone ink, vermilion
+  seal marks, and five low-saturation tab colors.
+- **Book details**: CSS gradients for the leather, an SVG noise grain for paper,
+  stitched gutter, blind-tooled cover border, running head, folio, and index
+  tabs.
+- **One layout per page**: a centred title page, a contents list, a
+  marginalia-driven entry, a notes column, a single page spread (About), and a
+  narrow correspondence letter. Nothing repeats unless it is book furniture
+  (running head, folio, tabs).
+- **Responsive**: below 1120px the spread becomes a single column; below 820px
+  the tabs turn into narrow vertical dividers so the page keeps its width.
+- **Accessibility**: skip link, semantic landmarks, focusable scroll region,
+  `aria-current` on the active tab, visible focus rings, and reduced-motion
+  support.
+
+The Contact page gives up the spread entirely for a single letter:
+
+![The single-column Contact page](docs/preview-contact.jpg)

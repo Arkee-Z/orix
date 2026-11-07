@@ -1,11 +1,70 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import Layout from "../layouts/Layout.astro";
+import SectionTitle from "../components/SectionTitle.astro";
+import { site, formatDate, pad, roman } from "../data/site";
+import { getPosts, postHref } from "../lib/posts";
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const posts = await getPosts();
+const selected = posts.slice(0, 3);
 ---
 
-<Layout>
-	<Welcome />
+<Layout section="Index" folio="01" mainClass="leaf--title">
+	<div class="title-page">
+		<div class="title-content">
+			<header class="title-block">
+				<p class="imprint imprint--center">
+					Notebook 04 · {site.year}
+				</p>
+				<h1 class="wordmark">Gene Max Zhang</h1>
+				<p class="tagline tagline--center">
+					<span>Full-Stack Engineer</span>
+					<br class="tagline-break" />
+					<span class="dot dot--lead" aria-hidden="true">·</span>
+					<span>Open Source</span>
+					<span class="dot" aria-hidden="true">·</span>
+					<span>Terminal Enthusiast</span>
+				</p>
+				<div class="rule-ornament" aria-hidden="true">
+					<span></span>
+				</div>
+				<p class="title-intro">
+					Essays and field notes on systems, interfaces, and the craft of
+					building for the web. Written from a terminal, kept like a book.
+				</p>
+			</header>
+
+			<section class="frontmatter" aria-label="Selected entries">
+				<SectionTitle
+					title="Selected Entries"
+					note={`${pad(selected.length)} of ${pad(posts.length)}`}
+				/>
+
+				<ol class="front-list">
+					{
+						selected.map((post, index) => (
+							<li class="front-item">
+								<a class="front-row" href={postHref(post)}>
+									<span class="front-no">{roman(index + 1)}</span>
+									<span class="front-main">
+										<span class="front-title">{post.data.title}</span>
+										<span class="front-leader" aria-hidden="true" />
+									</span>
+									<time
+										class="front-date"
+										datetime={post.data.date.toISOString()}
+									>
+										{formatDate(post.data.date)}
+									</time>
+								</a>
+							</li>
+						))
+					}
+				</ol>
+
+				<a class="text-link front-link" href="/writing">
+					Open the full contents <span class="arrow" aria-hidden="true">→</span>
+				</a>
+			</section>
+		</div>
+	</div>
 </Layout>
