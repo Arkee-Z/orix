@@ -98,9 +98,9 @@ full essays.
 - **Paper**: a generated dark paper-fibre texture plus a fine fibre tile, a
   shadowed gutter curve, a worn corner, and a layered page block along the
   fore-edge.
-- **Book details**: CSS gradients for the leather, stitched gutter, blind-tooled
-  cover border, running head, folio, and vertical paper tabs folded over the
-  fore-edge.
+- **Book details**: CSS gradients for the leather, a full-height rounded spine,
+  a thin head square and a deeper tail square exposing the page block, stitched
+  gutter, running head, folio, and vertical paper tabs folded over the fore-edge.
 - **One layout per page**: a centred title page, a contents list, a
   marginalia-driven entry, a notes column, a single page spread (About), and a
   narrow correspondence letter. Nothing repeats unless it is book furniture
