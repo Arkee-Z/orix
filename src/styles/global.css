@@ -105,8 +105,9 @@
 	--edge-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='90' height='90' filter='url(%23n)' opacity='0.14'/%3E%3C/svg%3E");
 
 	--page-inset: 28px;
-	--tab-w: 48px;
+	--tab-w: 52px;
 	--tab-gap: 8px;
+	--tab-overhang: 8px;
 
 	--ease: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
@@ -316,6 +317,20 @@ img {
 		0 80px 120px -60px rgba(0, 0, 0, 0.9);
 }
 
+.book::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 4;
+	border-radius: inherit;
+	pointer-events: none;
+	box-shadow:
+		inset 0 1px 0 rgba(255, 238, 208, 0.05),
+		inset 1px 0 0 rgba(255, 238, 208, 0.035),
+		inset -2px 0 0 rgba(0, 0, 0, 0.35),
+		inset 0 -2px 0 rgba(0, 0, 0, 0.4);
+}
+
 /* the fore-edge of the page block, showing ten or so millimetres of paper */
 .page-block {
 	position: absolute;
@@ -343,6 +358,7 @@ img {
 		url("/textures/page-stack-v.webp");
 	background-size: auto, 100% 100%;
 	background-repeat: no-repeat, no-repeat;
+	border-radius: 0 3px 3px 0;
 	box-shadow:
 		inset 1px 0 0 rgba(255, 240, 214, 0.08),
 		inset -1px 0 0 rgba(0, 0, 0, 0.4),
@@ -367,6 +383,7 @@ img {
 		url("/textures/page-stack-h.webp");
 	background-size: auto, 100% 100%;
 	background-repeat: no-repeat, no-repeat;
+	border-radius: 0 0 3px 3px;
 	box-shadow:
 		inset 0 1px 0 rgba(255, 240, 214, 0.08),
 		inset 0 -1px 0 rgba(0, 0, 0, 0.4),
@@ -468,23 +485,36 @@ img {
 			rgba(212, 180, 143, 0.14) 0 2px,
 			transparent 2px 12px
 		),
+		radial-gradient(95% 120% at -8% 52%, rgba(0, 0, 0, 0.62), transparent 54%),
 		linear-gradient(
 			90deg,
-			rgba(0, 0, 0, 0.38) 0,
-			rgba(0, 0, 0, 0.1) 58px,
-			transparent 112px
+			rgba(0, 0, 0, 0.34) 0,
+			rgba(0, 0, 0, 0.08) 64px,
+			transparent 124px
 		),
 		linear-gradient(
 			90deg,
-			transparent 80px,
-			rgba(255, 228, 185, 0.035) 150px,
-			transparent 260px
+			transparent 84px,
+			rgba(255, 228, 185, 0.055) 156px,
+			transparent 300px
 		),
-		radial-gradient(90% 55% at 25% -10%, rgba(255, 214, 160, 0.05), transparent 62%),
-		linear-gradient(270deg, rgba(0, 0, 0, 0.24), transparent 36px),
+		linear-gradient(
+			115deg,
+			rgba(0, 0, 0, 0.18) 0%,
+			transparent 25%,
+			rgba(255, 234, 204, 0.035) 46%,
+			transparent 62%,
+			rgba(0, 0, 0, 0.12) 100%
+		),
+		radial-gradient(85% 65% at 42% -12%, rgba(255, 224, 178, 0.105), transparent 66%),
+		linear-gradient(270deg, rgba(0, 0, 0, 0.28), transparent 42px),
+		linear-gradient(0deg, rgba(0, 0, 0, 0.16), transparent 24%),
 		url("/textures/page-paper.webp");
 	background-size:
 		1px 100%,
+		auto,
+		auto,
+		auto,
 		auto,
 		auto,
 		auto,
@@ -495,10 +525,16 @@ img {
 		0 0,
 		0 0,
 		0 0,
+		0 0,
+		0 0,
 		100% 0,
+		0 100%,
 		50% 45%;
 	background-repeat:
 		repeat-y,
+		no-repeat,
+		no-repeat,
+		no-repeat,
 		no-repeat,
 		no-repeat,
 		no-repeat,
@@ -521,10 +557,15 @@ img {
 	inset: 0;
 	z-index: 0;
 	pointer-events: none;
-	background-image: var(--noise);
-	background-size: 160px 160px;
-	opacity: 0.04;
-	mix-blend-mode: overlay;
+	background-image:
+		url("/textures/paper-fibres.webp"),
+		var(--noise);
+	background-size:
+		420px 420px,
+		96px 96px;
+	background-repeat: repeat, repeat;
+	opacity: 0.5;
+	mix-blend-mode: soft-light;
 }
 
 /* a soft dog-ear at the outer bottom corner */
@@ -684,7 +725,7 @@ img {
 	position: absolute;
 	z-index: 6;
 	top: clamp(64px, 10.4vh, 96px);
-	right: calc(var(--page-inset) - 2px);
+	right: calc(-1 * var(--tab-overhang));
 	display: flex;
 	flex-direction: column;
 	align-items: flex-end;
@@ -702,9 +743,20 @@ img {
 	width: var(--tab-w);
 	height: clamp(74px, 9.6vh, 86px);
 	padding: 10px 0;
-	border-radius: 4px 0 0 4px;
+	padding-left: calc(100% - var(--page-inset) - var(--tab-overhang));
+	border-radius: 0 7px 7px 0;
 	background-color: var(--tab-bg, #6d3a30);
 	background-image:
+		linear-gradient(
+			90deg,
+			transparent 0
+				calc(100% - var(--page-inset) - var(--tab-overhang) - 1px),
+			rgba(0, 0, 0, 0.22)
+				calc(100% - var(--page-inset) - var(--tab-overhang)),
+			rgba(0, 0, 0, 0.035)
+				calc(100% - var(--page-inset) - var(--tab-overhang) + 1px),
+			rgba(0, 0, 0, 0) 100%
+		),
 		linear-gradient(90deg, rgba(255, 245, 225, 0.035), transparent 18%),
 		linear-gradient(
 			180deg,
@@ -721,10 +773,14 @@ img {
 		inset 1px 0 0 rgba(255, 255, 255, 0.05),
 		inset 0 1px 0 rgba(255, 255, 255, 0.14),
 		inset -1px 0 0 rgba(255, 255, 255, 0.04),
+		inset calc(-1 * (var(--page-inset) + var(--tab-overhang))) 0 0
+			rgba(0, 0, 0, 0.16),
+		inset calc(-1 * (var(--page-inset) + var(--tab-overhang)) + 1px) 0 0
+			rgba(255, 255, 255, 0.05),
 		inset 0 -3px 5px -5px rgba(0, 0, 0, 0.48),
 		inset 0 -1px 0 rgba(255, 240, 214, 0.08),
 		-5px 7px 14px -10px rgba(0, 0, 0, 0.55),
-		3px 3px 5px -4px rgba(0, 0, 0, 0.4);
+		3px 4px 7px -5px rgba(0, 0, 0, 0.5);
 	transition:
 		transform 0.28s var(--ease),
 		background-color 0.28s var(--ease),
@@ -794,12 +850,23 @@ img {
 .tab.is-active {
 	width: calc(var(--tab-w) + 6px);
 	background-color: var(--paper);
-	background-image: linear-gradient(
-		180deg,
-		rgba(255, 240, 214, 0.035),
-		transparent 44%,
-		rgba(0, 0, 0, 0.1)
-	);
+	background-image:
+		linear-gradient(
+			90deg,
+			transparent 0
+				calc(100% - var(--page-inset) - var(--tab-overhang) - 1px),
+			rgba(0, 0, 0, 0.18)
+				calc(100% - var(--page-inset) - var(--tab-overhang)),
+			rgba(0, 0, 0, 0.03)
+				calc(100% - var(--page-inset) - var(--tab-overhang) + 1px),
+			rgba(0, 0, 0, 0) 100%
+		),
+		linear-gradient(
+			180deg,
+			rgba(255, 240, 214, 0.035),
+			transparent 44%,
+			rgba(0, 0, 0, 0.1)
+		);
 	color: var(--accent-ink);
 	box-shadow:
 		inset 0 1px 0 rgba(255, 240, 214, 0.08),
@@ -2176,6 +2243,7 @@ img {
 	:root {
 		--page-inset: 14px;
 		--tab-w: 40px;
+	--tab-overhang: 7px;
 		--tab-gap: 7px;
 	}
 
@@ -2409,7 +2477,8 @@ img {
 
 @media (max-width: 560px) {
 	:root {
-		--tab-w: 36px;
+		--tab-w: 34px;
+	--tab-overhang: 6px;
 		--page-inset: 12px;
 	}
 
