@@ -14,7 +14,7 @@ const projects = [
 	{
 		title: "Orix Journal",
 		year: "2024 — now",
-		text: "This very site. A terminal-native blog engine built with Astro, Markdown, and a little hand-written CSS, published from the command line and set like a book.",
+		text: "This very site. A terminal-native journal built with Astro, Markdown, and hand-written CSS, published from the command line and set like a printed magazine.",
 	},
 	{
 		title: "Vetem",
@@ -44,6 +44,11 @@ const projects = [
 					Engineer by trade, reader by temperament, terminal resident by choice.
 				</p>
 			</header>
+
+			<div class="profile-plate" aria-hidden="true">
+				<span class="profile-initials">GMZ</span>
+				<span class="profile-caption">Gene Max Zhang · Chengdu · Est. MMXIX</span>
+			</div>
 
 			<div class="about-copy">
 				<p>
@@ -110,9 +115,11 @@ const projects = [
 
 			<div class="colophon">
 				<strong>Colophon</strong>
-				Set in IBM Plex Mono and Space Mono. Built with Astro, held together
-				with hand-written CSS. The paper is a gradient, the grain is an SVG, and
-				the tabs on the right are the navigation. Written in {site.location}.
+				Labels set in IBM Plex Mono and Space Mono; display and text in the
+				native editorial serif. Built with Astro and held together with
+				hand-written CSS. The paper is a generated newsprint tile, the rules
+				are borders, and the departments across the top are the navigation.
+				Written in {site.location}.
 			</div>
 		</section>
 	</div>

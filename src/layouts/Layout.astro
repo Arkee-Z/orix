@@ -1,6 +1,6 @@
 ---
 import "../styles/global.css";
-import Tabs from "../components/Tabs.astro";
+import DepartmentNav from "../components/DepartmentNav.astro";
 import { site } from "../data/site";
 
 interface Props {
@@ -24,13 +24,12 @@ const pageTitle = title
 	: `${site.imprint} — A Journal of Code & Consequence`;
 ---
 
-
 <!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<meta name="theme-color" content="#0c0a09" />
+		<meta name="theme-color" content="#f2e8d5" />
 		<link
 			rel="icon"
 			type="image/svg+xml"
@@ -45,7 +44,7 @@ const pageTitle = title
 		<title>{pageTitle}</title>
 		<link
 			rel="preload"
-			href="/fonts/plex-300.woff2"
+			href="/fonts/plex-400.woff2"
 			as="font"
 			type="font/woff2"
 			crossorigin
@@ -68,40 +67,67 @@ const pageTitle = title
 	<body>
 		<a class="skip-link" href="#main">Skip to the page</a>
 
-		<div class="stage">
-			<div class="book-wrap">
-				<Tabs />
+		<div class="magazine">
+			<header class:list={["masthead", { "masthead--compact": mainClass !== "page--index" }]}>
+				<div class="masthead-meta">
+					<span>{site.volume} · No. {site.issue}</span>
+					<span class="masthead-meta-mid">A journal of code &amp; consequence</span>
+					<span>{site.year} · {site.location}</span>
+				</div>
 
-				<div class="book">
-					<div class="page-block" aria-hidden="true"></div>
-
-					<div class="spine" aria-hidden="true">
-						<span class="band band-top"></span>
-						<span class="spine-year">{site.year}</span>
-						<span class="spine-title">Orix · A Journal of Code</span>
-						<span class="spine-mark">❦</span>
-						<span class="band band-bottom"></span>
-					</div>
-
-					<div class="page">
-						<div class="page-head">
-							<span class="rh-section">{section}</span>
-							<span class="rh-right">{site.imprint} · {site.volume}</span>
-						</div>
-
-						<main class:list={["leaf", mainClass]} id="main" tabindex="0">
-							<div class="leaf-inner">
-								<slot />
-							</div>
-						</main>
-
-						<div class="folio">
-							<span class="folio-left">{site.since} · {site.location}</span>
-							<span class="folio-right">Leaf {folio}</span>
-						</div>
+				<div class="masthead-main">
+					<a class="masthead-logo" href="/" aria-label={`${site.imprint}, home`}>
+						<span class="masthead-word">Orix</span>
+						<span class="masthead-dot" aria-hidden="true"></span>
+					</a>
+					<p class="masthead-dek">{site.description}</p>
+					<div class="masthead-issue" aria-label={`Issue ${site.issue}`}>
+						<span class="masthead-issue-label">Issue</span>
+						<strong class="masthead-issue-number">{site.issue}</strong>
+						<span class="masthead-issue-year">{site.year}</span>
 					</div>
 				</div>
+
+				<DepartmentNav />
+			</header>
+
+			<div class="running-head">
+				<span class="running-section">{section}</span>
+				<span class="running-imprint">{site.imprint} · {site.volume} · No. {site.issue}</span>
+				<span class="running-folio">{folio}</span>
 			</div>
+
+			<main class:list={["issue", mainClass]} id="main" tabindex="0">
+				<slot />
+			</main>
+
+			<footer class="site-footer">
+				<div class="footer-grid">
+					<div class="footer-block footer-brand">
+						<p class="label">Orix Journal</p>
+						<p>
+							An independent journal of code, tools and consequence, written
+							from a terminal in {site.location}.
+						</p>
+					</div>
+					<div class="footer-block">
+						<p class="label">Colophon</p>
+						<p>
+							Labels set in IBM Plex Mono and Space Mono. Display and text in
+							the native editorial serif. Printed on a screen, grain and all.
+						</p>
+					</div>
+					<div class="footer-block footer-contact">
+						<p class="label">Correspondence</p>
+						<a href={`mailto:${site.email}`}>{site.email}</a>
+						<a href={site.github} rel="me">{site.githubLabel}</a>
+					</div>
+				</div>
+				<div class="footer-bottom">
+					<span>© {site.year} Gene Max Zhang</span>
+					<span>Printed in the browser · {site.location}</span>
+				</div>
+			</footer>
 		</div>
 	</body>
 </html>

@@ -1,5 +1,6 @@
 ---
 import { nav } from "../data/site";
+import { pad } from "../data/site";
 
 const path = Astro.url.pathname.replace(/\/+$/, "") || "/";
 
@@ -9,17 +10,18 @@ function isActive(href: string): boolean {
 }
 ---
 
-<nav class="tabs" aria-label="Journal sections">
+<nav class="departments" aria-label="Sections">
 	{
 		nav.map((item, index) => (
 			<a
 				href={item.href}
-				class:list={["tab", { "is-active": isActive(item.href) }]}
-				style={`--tab-bg: ${item.color}`}
+				class:list={["department", { "is-active": isActive(item.href) }]}
+				style={`--dept-color: ${item.color}`}
 				aria-current={isActive(item.href) ? "page" : undefined}
 			>
-				<span class="tab-no">{String(index + 1).padStart(2, "0")}</span>
-				<span class="tab-label">{item.label}</span>
+				<span class="department-no">{pad(index + 1)}</span>
+				<span class="department-name">{item.label}</span>
+				<span class="department-mark" aria-hidden="true" />
 			</a>
 		))
 	}

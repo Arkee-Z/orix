@@ -1,21 +1,25 @@
 # Orix Journal
 
-A small personal blog for Gene Max Zhang, set like a book on a dark green
-baize desk. Warm paper, a blind-tooled cover, a stitched spine, and five paper
-index tabs folded over the page's fore-edge. Built with Astro and plain CSS — no
-client-side framework, no theme switcher, no analytics.
+A retro magazine for Gene Max Zhang, set on warm newsprint with ink-black
+serif headlines, red rules, and departments across the top. Essays and field
+notes on terminals, Rust, TypeScript, and the craft of building for the web.
+
+Built with Astro and plain CSS — no client-side framework, no theme switcher,
+no analytics.
+
+![The Orix Journal cover](docs/preview-desktop.jpg)
 
 ## The idea
 
-Most blogs look like feeds. This one looks like a bound volume: a running head
-at the top of the page, a folio at the bottom, a red seal for section marks, and
-navigation rendered as vertical paper tabs pasted over the page's fore-edge, with
-a crease where they fold around the paper. The page scrolls inside the cover, so
-the tabs stay in your hand while you read.
+The site reads like an independent print magazine rather than a feed. Every
+page has a masthead, a running head, and a department number. The Index is a
+cover story with an issue contents column; Writing is the contents page;
+entries open into two-column features with marginalia. Notes, About, Contact,
+and the 404 are separate editorial treatments rather than copies of one card.
 
 Content is written in Markdown and published as static HTML.
 
-![The Orix Journal home page](docs/preview-desktop.jpg)
+![The cover on a narrow screen](docs/preview-mobile.jpg)
 
 ## Running it
 
@@ -40,28 +44,28 @@ astro dev stop
 ```text
 src/
 ├─ components/
-│  ├─ SectionTitle.astro   # § section headings with optional side note
-│  └─ Tabs.astro           # paper index tabs pasted to the page edge
+│  ├─ DepartmentNav.astro  # departments, numbers, active state
+│  └─ SectionTitle.astro   # section headings with side notes
 ├─ content/
 │  └─ writing/             # Markdown entries (one file per post)
 ├─ content.config.ts       # writing collection schema
 ├─ data/
-│  ├─ site.ts              # identity, nav, date helpers, roman numerals
+│  ├─ site.ts              # identity, nav, dates, roman numerals
 │  └─ notes.ts             # short field notes
 ├─ layouts/
-│  └─ Layout.astro         # desk, book, spine, page, running head, folio
+│  └─ Layout.astro         # masthead, running head, issue, footer
 ├─ lib/
 │  └─ posts.ts             # collection helpers
 ├─ pages/
-│  ├─ index.astro          # title page + selected entries
-│  ├─ writing/index.astro  # table of contents
-│  ├─ writing/[slug].astro # entry layout with marginalia
-│  ├─ notes.astro          # field notes with marginalia
-│  ├─ about.astro          # the only page spread: author / skills / projects
-│  ├─ contact.astro        # single-column letter
+│  ├─ index.astro          # cover story + issue contents
+│  ├─ writing/index.astro  # contents page
+│  ├─ writing/[slug].astro # two-column feature with marginalia
+│  ├─ notes.astro          # field notes columns
+│  ├─ about.astro          # author feature + skills/projects
+│  ├─ contact.astro        # correspondence page
 │  └─ 404.astro
 └─ styles/
-   └─ global.css           # tokens, book shell, type, tabs, responsive
+   └─ global.css           # newsprint, type, grid, departments, responsive
 ```
 
 ## Writing an entry
@@ -72,7 +76,7 @@ Add a Markdown file to `src/content/writing/`:
 ---
 title: "A Title"
 date: 2026-10-18
-summary: "One or two sentences for the index and meta tags."
+summary: "One or two sentences for the contents page and meta tags."
 tags: ["Essay", "Craft"]
 minutes: 6
 ---
@@ -81,36 +85,40 @@ Body text. The first paragraph gets a drop cap in the entry layout.
 ```
 
 The file name becomes the slug (`/writing/<file-name>`). Entries are sorted by
-date, newest first; the home page lists the three most recent, the Writing tab
-holds the full contents.
+date, newest first; the home page uses the newest as the cover story and lists
+the rest in the issue contents.
 
 Notes are plain data in `src/data/notes.ts` — short, dated fragments rather than
 full essays.
 
 ## Design notes
 
-- **Type**: IBM Plex Mono for text, Space Mono for display. Both are self-hosted
-  in `public/fonts/` (SIL Open Font License) and preloaded by the layout.
-- **Palette**: warm near-black cover, dark brown paper, muted bone ink, vermilion
-  seal marks, and five low-saturation tab colors.
-- **Desk**: deep green baize built from layered CSS gradients and a fine woven
-  grain, lit from the upper left and vignetted so the book stays the focus.
-- **Paper**: a generated dark paper-fibre texture plus a fine fibre tile, a
-  shadowed gutter curve, a worn corner, and a layered page block along the
-  fore-edge.
-- **Book details**: CSS gradients for the leather, a full-height rounded spine,
-  a thin head square and a deeper tail square exposing the page block, stitched
-  gutter, running head, folio, and vertical paper tabs folded over the fore-edge.
-- **One layout per page**: a centred title page, a contents list, a
-  marginalia-driven entry, a notes column, a single page spread (About), and a
-  narrow correspondence letter. Nothing repeats unless it is book furniture
-  (running head, folio, tabs).
-- **Responsive**: below 1120px the spread becomes a single column; below 820px
-  the tabs narrow further but stay folded over the page margin.
-- **Accessibility**: skip link, semantic landmarks, focusable scroll region,
-  `aria-current` on the active tab, visible focus rings, and reduced-motion
-  support.
+- **Type**: display and prose in a native editorial serif; labels, dates, and
+  numbers in self-hosted IBM Plex Mono and Space Mono.
+- **Paper**: a generated, seamless newsprint tile with a subtle fibre grain,
+  warmed with a soft vignette. No flat background colour.
+- **Cover**: a large serif cover line, a red halftone issue plate with a terminal
+  cursor, an issue contents column, and a frontmatter spread with the author
+  note and department index.
+- **Departments**: a single row of numbered sections; the current department is
+  a solid vermilion block. The same row becomes five equal cells on mobile.
+- **Interior**: interior pages use a compact masthead. Writing is a contents
+  page; entries are two-column features with a marginalia rail; Notes is a
+  two-column log with a sidebar; About is a profile with a printed GMZ plate;
+  Contact is a letter with a stamp block.
+- **Rules**: black hairlines, double rules, dotted leaders, red accents, and
+  tight editorial spacing do most of the layout work. There are no rounded
+  cards.
+- **Responsive**: the cover stacks, the article drops to one column, notes
+  become a single column, and the footer stacks. The five departments remain
+  visible at narrow widths.
+- **Accessibility**: skip link, semantic landmarks, `aria-current` on the active
+  department, visible focus rings, and reduced-motion support.
 
-The Contact page gives up the spread entirely for a single letter:
+A feature spread:
 
-![The single-column Contact page](docs/preview-contact.jpg)
+![A two-column feature with marginalia](docs/preview-article.jpg)
+
+The Contact page is a letter, not a form:
+
+![The correspondence page](docs/preview-contact.jpg)
