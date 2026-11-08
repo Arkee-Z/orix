@@ -1,115 +1,70 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { site, nav, formatDate, roman } from "../data/site";
+import SectionTitle from "../components/SectionTitle.astro";
+import { site, formatDate, pad, roman } from "../data/site";
 import { getPosts, postHref } from "../lib/posts";
 
 const posts = await getPosts();
-const [feature, ...rest] = posts;
-
-const departmentNotes: Record<string, string> = {
-	Index: "Cover story & contents",
-	Writing: "Essays and long-form",
-	Notes: "Field notes & fragments",
-	About: "The author",
-	Contact: "Correspondence",
-};
+const selected = posts.slice(0, 3);
 ---
 
-<Layout section="Index" folio="01" mainClass="page--index">
-	<section class="cover">
-		<div class="cover-copy">
-			<p class="kicker">
-				<span class="kicker-mark" aria-hidden="true"></span>
-				Cover story
-				<span class="kicker-sep" aria-hidden="true">/</span>
-				Issue {site.issue}
-			</p>
+<Layout section="Index" folio="01" mainClass="leaf--title">
+	<div class="title-page">
+		<div class="title-content">
+			<header class="title-block">
+				<p class="imprint imprint--center">
+					Notebook 04 · {site.year}
+				</p>
+				<h1 class="wordmark">Gene Max Zhang</h1>
+				<p class="tagline tagline--center">
+					<span>Full-Stack Engineer</span>
+					<br class="tagline-break" />
+					<span class="dot dot--lead" aria-hidden="true">·</span>
+					<span>Open Source</span>
+					<span class="dot" aria-hidden="true">·</span>
+					<span>Terminal Enthusiast</span>
+				</p>
+				<div class="rule-ornament" aria-hidden="true">
+					<span></span>
+				</div>
+				<p class="title-intro">
+					Essays and field notes on systems, interfaces, and the craft of
+					building for the web. Written from a terminal, kept like a book.
+				</p>
+			</header>
 
-			<h1 class="cover-title">{feature.data.title}</h1>
-			<p class="cover-dek">{feature.data.summary}</p>
+			<section class="frontmatter" aria-label="Selected entries">
+				<SectionTitle
+					title="Selected Entries"
+					note={`${pad(selected.length)} of ${pad(posts.length)}`}
+				/>
 
-			<div class="cover-byline">
-				<span>By Gene Max Zhang</span>
-				<span aria-hidden="true">·</span>
-				<time datetime={feature.data.date.toISOString()}>
-					{formatDate(feature.data.date)}
-				</time>
-				<span aria-hidden="true">·</span>
-				<span>{feature.data.minutes} min read</span>
-			</div>
-
-			<a class="cover-link" href={postHref(feature)}>
-				Read the feature <span class="arrow" aria-hidden="true">→</span>
-			</a>
-		</div>
-
-		<aside class="cover-aside">
-			<div class="cover-graphic" aria-hidden="true">
-				<span class="cover-graphic-no">{site.issue}</span>
-				<span class="cover-cursor">&gt;_</span>
-				<span class="cover-graphic-caption">Notes from the command line</span>
-			</div>
-
-			<div class="cover-contents">
-				<p class="label">Also in this issue</p>
-				<ol>
+				<ol class="front-list">
 					{
-						rest.map((post, index) => (
-							<li>
-								<a href={postHref(post)}>
-									<span class="cover-contents-no">{roman(index + 2)}</span>
-									<span class="cover-contents-title">{post.data.title}</span>
+						selected.map((post, index) => (
+							<li class="front-item">
+								<a class="front-row" href={postHref(post)}>
+									<span class="front-no">{roman(index + 1)}</span>
+									<span class="front-main">
+										<span class="front-title">{post.data.title}</span>
+										<span class="front-leader" aria-hidden="true" />
+									</span>
+									<time
+										class="front-date"
+										datetime={post.data.date.toISOString()}
+									>
+										{formatDate(post.data.date)}
+									</time>
 								</a>
 							</li>
 						))
 					}
 				</ol>
-				<a class="text-link" href="/writing">
-					All contents <span class="arrow" aria-hidden="true">→</span>
+
+				<a class="text-link front-link" href="/writing">
+					Open the full contents <span class="arrow" aria-hidden="true">→</span>
 				</a>
-			</div>
-		</aside>
-	</section>
-
-	<section class="frontmatter">
-		<div class="frontmatter-about">
-			<p class="kicker">From the desk</p>
-			<p class="frontmatter-lede">
-				Essays and field notes on systems, interfaces, and the craft of
-				building for the web.
-			</p>
-			<p class="frontmatter-body">
-				Written from a terminal in {site.location}, between long builds and
-				short walks. The journal keeps the useful fragments: how interfaces
-				earn trust, how small tools stay small, and why the best software
-				still feels like a well-set page.
-			</p>
-			<a class="text-link" href="/about">
-				About the author <span class="arrow" aria-hidden="true">→</span>
-			</a>
+			</section>
 		</div>
-
-		<div class="frontmatter-departments">
-			<p class="label">Departments</p>
-			<ol class="department-index">
-				{
-					nav.map((item, index) => (
-						<li>
-							<a href={item.href}>
-								<span class="department-index-no">
-									{String(index + 1).padStart(2, "0")}
-								</span>
-								<span class="department-index-main">
-									<span class="department-index-name">{item.label}</span>
-									<span class="department-index-note">
-										{departmentNotes[item.label]}
-									</span>
-								</span>
-							</a>
-						</li>
-					))
-				}
-			</ol>
-		</div>
-	</section>
+	</div>
 </Layout>

@@ -1,8 +1,7 @@
 export const site = {
 	name: "Gene Max Zhang",
-	issue: "04",
 	description:
-		"Essays and field notes on terminals, Rust, TypeScript, and the craft of building for the web. A journal of code & consequence, written from a terminal in Chengdu.",
+		"The notebook of Gene Max Zhang — essays and field notes on terminals, Rust, TypeScript, and the craft of building for the web.",
 	email: "gene.max.zheng@foxmail.com",
 	github: "https://github.com/Arkee-Z",
 	githubLabel: "github.com/Arkee-Z",
@@ -21,11 +20,11 @@ export type NavItem = {
 };
 
 export const nav: NavItem[] = [
-	{ label: "Index", href: "/", color: "#9b2f24" },
-	{ label: "Writing", href: "/writing", color: "#a4782d" },
-	{ label: "Notes", href: "/notes", color: "#5a6844" },
-	{ label: "About", href: "/about", color: "#3d5c56" },
-	{ label: "Contact", href: "/contact", color: "#6c4b5f" },
+	{ label: "Index", href: "/", color: "#76382e" },
+	{ label: "Writing", href: "/writing", color: "#795d33" },
+	{ label: "Notes", href: "/notes", color: "#55603b" },
+	{ label: "About", href: "/about", color: "#405a57" },
+	{ label: "Contact", href: "/contact", color: "#56435a" },
 ];
 
 const dateFormatter = new Intl.DateTimeFormat("en-GB", {
