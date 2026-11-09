@@ -1,6 +1,5 @@
 ---
 import Layout from "../../../../layouts/Layout.astro";
-import GenreNav from "../../../../components/GenreNav.astro";
 import { getUi, languages, localeHref, dateLabel, type Lang } from "../../../../i18n/ui";
 import {
 	chapterLabel,
@@ -30,11 +29,8 @@ const t = getUi(lang);
 const kind = group.kind;
 const isPoetry = kind === "poem";
 const first = group.entries[0];
-const categoryPath = isPoetry ? "/literature/poetry" : "/literature/fiction";
-const categoryLabel =
-	lang === "zh"
-		? `02 — ${isPoetry ? "诗" : "小说"}`
-		: `02 — ${isPoetry ? "Poetry" : "Fiction"}`;
+const categoryPath = "/index";
+const categoryLabel = lang === "zh" ? "系列" : "Series";
 ---
 
 <Layout
@@ -62,11 +58,9 @@ const categoryLabel =
 			<span class="arrow" aria-hidden="true">→</span>
 		</a>
 		<a class="text-link series-back" href={localeHref(lang, categoryPath)}>
-			← {isPoetry ? (lang === "zh" ? "返回诗" : "Back to poetry") : t.literature.back}
+			← {t.nav.catalog}
 		</a>
 	</div>
-
-	<GenreNav lang={lang} active={kind} />
 
 	<ol class="chapter-list">
 		{

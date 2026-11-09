@@ -7,12 +7,12 @@ import {
 	dateLabel,
 	getUi,
 	languages,
+	localeHref,
 	otherLang,
 	type Lang,
 } from "../../../i18n/ui";
 import {
 	chapterLabel,
-	genreHref,
 	genreMeta,
 	getPosts,
 	postHref,
@@ -61,9 +61,9 @@ const translated = post.data.translationKey
 	: undefined;
 const altHref = translated
 	? postHref(translated, other)
-	: genreHref(kind, other);
+	: localeHref(other, "/index");
 
-const categoryHref = genreHref(kind, lang);
+const categoryHref = localeHref(lang, "/index");
 const isPoem = kind === "poem";
 const isFiction = kind === "fiction";
 const visibleTags = post.data.tags.filter(
@@ -93,7 +93,7 @@ const nextLabel = isPoem
 	<article class:list={["entry", `entry--${kind}`, `entry--${lang}`]} lang={post.data.lang === "zh" ? "zh-CN" : "en"}>
 		<header>
 			<p class="entry-kicker">
-				<a class="entry-genre" href={categoryHref}>{genre[lang]}</a>
+				<span class="entry-format">{t.formats.text}</span>
 				{series.length > 0 && (
 					<>
 						<span class="sep" aria-hidden="true">/</span>
@@ -201,8 +201,8 @@ const nextLabel = isPoem
 					</a>
 				) : (
 					<a href={categoryHref}>
-						<span class="dir">← {isPoem ? (lang === "zh" ? "全部诗" : "All poetry") : isFiction ? (lang === "zh" ? "全部小说" : "All fiction") : t.entry.backToLiterature}</span>
-						<span class="title">{genre[lang]}</span>
+						<span class="dir">← {t.nav.catalog}</span>
+						<span class="title">{t.nav.catalog}</span>
 					</a>
 				)}
 				{next ? (
@@ -212,8 +212,8 @@ const nextLabel = isPoem
 					</a>
 				) : (
 					<a class="next" href={categoryHref}>
-						<span class="dir">{isPoem ? (lang === "zh" ? "全部诗" : "All poetry") : isFiction ? (lang === "zh" ? "全部小说" : "All fiction") : t.entry.backToLiterature} →</span>
-						<span class="title">{genre[lang]}</span>
+						<span class="dir">{t.nav.catalog} →</span>
+						<span class="title">{t.nav.catalog}</span>
 					</a>
 				)}
 			</nav>

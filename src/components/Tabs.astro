@@ -9,7 +9,16 @@ const { lang } = Astro.props;
 const path = Astro.url.pathname.replace(/^\/(zh|en)(?=\/|$)/, "") || "/";
 
 function isActive(target: string): boolean {
-	return target === "/" ? path === "/" : path === target || path.startsWith(`${target}/`);
+	if (target === "/") return path === "/";
+	if (target === "/index") {
+		return (
+			path === "/index" ||
+			path.startsWith("/literature") ||
+			path.startsWith("/music") ||
+			path.startsWith("/art")
+		);
+	}
+	return path === target || path.startsWith(`${target}/`);
 }
 ---
 

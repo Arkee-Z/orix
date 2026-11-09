@@ -56,17 +56,8 @@ export function artHref(entry: Art, lang: Lang): string {
 	return localeHref(lang, `/art/${entry.id}`);
 }
 
-export function genreHref(kind: GenreKey, lang: Lang): string {
-	const genre = genres.find((item) => item.key === kind);
-	return localeHref(lang, genre?.path ?? "/literature");
-}
-
 export function genreMeta(kind: GenreKey) {
 	return genres.find((item) => item.key === kind) ?? genres[0];
-}
-
-export function kindHref(kind: GenreKey, lang: Lang): string {
-	return genreHref(kind, lang);
 }
 
 export function seriesHref(series: string, lang: Lang): string {
@@ -189,5 +180,72 @@ export async function getAllContent(lang: Lang): Promise<FeedItem[]> {
 			tags: entry.data.tags,
 		})),
 	];
+	return items.sort((a, b) => b.date.valueOf() - a.date.valueOf());
+}
+
+export type IndexFormat = "text" | "sound" | "image";
+
+export type IndexItem = {
+	id: string;
+	title: string;
+	date: Date;
+	summary: string;
+	url: string;
+	format: IndexFormat;
+	meta: string;
+};
+
+/**
+ * One flat, chronological stream of everything in an issue.
+ * No sections by art form: a poem, a track, a painting and a review
+ * sit next to each other and are distinguished only by a small mark.
+ */
+export async function getIndexItems(lang: Lang): Promise<IndexItem[]> {
+	const [posts, reviews, art, tracks] = await Promise.all([
+		getPosts(lang),
+		getMusic(lang),
+		getArt(lang),
+		getTracks(lang),
+	]);
+
+	const items: IndexItem[] = [
+		...posts.map((entry) => ({
+			id: `text-${entry.id}`,
+			title: entry.data.title,
+			date: entry.data.date,
+			summary: entry.data.summary,
+			url: postHref(entry, lang),
+			format: "text" as const,
+			meta: entry.data.tags[0] ?? "",
+		})),
+		...reviews.map((entry) => ({
+			id: `review-${entry.id}`,
+			title: entry.data.title,
+			date: entry.data.date,
+			summary: entry.data.summary,
+			url: musicHref(entry, lang),
+			format: "text" as const,
+			meta: entry.data.artist,
+		})),
+		...art.map((entry) => ({
+			id: `image-${entry.id}`,
+			title: entry.data.title,
+			date: entry.data.date,
+			summary: entry.data.summary,
+			url: artHref(entry, lang),
+			format: "image" as const,
+			meta: entry.data.artist,
+		})),
+		...tracks.map((entry) => ({
+			id: `sound-${entry.id}`,
+			title: entry.data.title,
+			date: entry.data.date,
+			summary: entry.data.summary,
+			url: `${localeHref(lang, "/music")}#${entry.id}`,
+			format: "sound" as const,
+			meta: entry.data.artist,
+		})),
+	];
+
 	return items.sort((a, b) => b.date.valueOf() - a.date.valueOf());
 }

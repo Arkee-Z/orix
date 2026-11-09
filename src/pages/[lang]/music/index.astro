@@ -263,6 +263,9 @@ const reviewItems = reviews.map((entry) => ({
 					row.classList.toggle("is-active", active);
 					row.setAttribute("aria-current", active ? "true" : "false");
 				});
+				if (typeof history.replaceState === "function") {
+					history.replaceState(null, "", `#${track.id}`);
+				}
 				if (autoplay) {
 					audio.play().catch(() => paintPlay());
 				} else {
@@ -309,7 +312,9 @@ const reviewItems = reviews.map((entry) => ({
 				}
 			});
 
-			setTrack(0, false);
+			const requested = decodeURIComponent(location.hash.slice(1));
+			const requestedIndex = data.findIndex((track) => track.id === requested);
+			setTrack(requestedIndex >= 0 ? requestedIndex : 0, false);
 		})();
 	</script>
 </Layout>
