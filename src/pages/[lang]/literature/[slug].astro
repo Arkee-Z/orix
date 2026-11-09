@@ -61,9 +61,9 @@ const translated = post.data.translationKey
 	: undefined;
 const altHref = translated
 	? postHref(translated, other)
-	: localeHref(other, "/index");
+	: localeHref(other, "/");
 
-const categoryHref = localeHref(lang, "/index");
+const categoryHref = localeHref(lang, "/");
 const isPoem = kind === "poem";
 const isFiction = kind === "fiction";
 const visibleTags = post.data.tags.filter(
@@ -201,8 +201,8 @@ const nextLabel = isPoem
 					</a>
 				) : (
 					<a href={categoryHref}>
-						<span class="dir">← {t.nav.catalog}</span>
-						<span class="title">{t.nav.catalog}</span>
+						<span class="dir">← {t.nav.index}</span>
+						<span class="title">{t.nav.index}</span>
 					</a>
 				)}
 				{next ? (
@@ -212,8 +212,8 @@ const nextLabel = isPoem
 					</a>
 				) : (
 					<a class="next" href={categoryHref}>
-						<span class="dir">{t.nav.catalog} →</span>
-						<span class="title">{t.nav.catalog}</span>
+						<span class="dir">{t.nav.index} →</span>
+						<span class="title">{t.nav.index}</span>
 					</a>
 				)}
 			</nav>

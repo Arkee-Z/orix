@@ -1,19 +1,20 @@
 # Orix 文艺志
 
-一个以**中文为主**的多语种个人文艺志。它不按“文学 / 音乐 / 美术”分栏，而是把文字、声音与图像按时间编进同一条目录。
+一个以**中文为主**的多语种个人文艺志。它不按“文学 / 音乐 / 美术”做目录，也不把内容切成板块；首页本身就是一本 **issue**，按版面展开。
 
-顶部只有四个入口：**卷首 / 目录 / 关于 / 联系**。聆听室和画廊作为空间存在，从目录、作品与页脚进入，不再被做成硬性分类。
+顶部只有三个入口：**卷首 / 关于 / 联系**。整本刊物的顺序是：封面 → 特稿 → 图版 → 聆听 → 版权页。聆听室和画廊是版面的延伸，不在导航里做分类。
 
 ![首页](docs/preview-desktop.jpg)
 
-## 一条目录
+## 版面
 
-- **文字**：文章、小说、随笔、诗。`kind` 只决定详情页如何排版（章节、诗行、正文），不再生成“文章 / 小说 / 随笔 / 诗”的分类栏目。
-- **声音**：曲目、播放器、曲库；点击目录里的声音条目会进入聆听室并定位到该曲。
-- **图像**：画框、画廊、灯箱；目录里的图像条目直接进入作品与文字。
-- 目录是一个混合流：一首诗、一段录音、一幅画和一篇评论可以相邻出现，只用很小的“文字 / 声音 / 图像”标记提示媒介，不做分区。
+- **封面**：刊名、卷号、本期选读。
+- **特稿**：一篇主文，一段正文摘引，加同期的其他文字；是版面，不是文章列表。
+- **图版**：画框墙直接嵌在首页上，作为一整版图像；可进入完整画廊。
+- **聆听**：播放器与曲库作为一整版声音；可进入完整聆听室。
+- **版权页**：卷号、地点、起始年份。
 
-![目录](docs/preview-index.jpg)
+![图版与特稿](docs/preview-spreads.jpg)
 
 ## 聆听室与画廊
 
@@ -28,7 +29,7 @@
 
 ```text
 src/content/
-├─ writing/   # 文字
+├─ writing/   # 特稿与其他文字
 ├─ music/     # 关于声音的文字
 ├─ tracks/    # 曲库
 └─ art/       # 图像与文字
@@ -38,7 +39,7 @@ public/
 └─ art/       # 画廊图片
 ```
 
-`kind: article | fiction | essay | poem` 仍保留，但它只是排版信息：小说可以有 `series`/`order`，诗会按纯文本保留换行。它不会在导航里生成分类。
+`kind: article | fiction | essay | poem` 仍保留，但它只是排版信息：小说可以有 `series`/`order`，诗会按纯文本保留换行。它不会生成公开分类页，也不会出现在导航里。首页会自动把最新文字放进特稿，把画作放进图版，把曲目放进聆听。
 
 音乐曲目示例：
 
@@ -78,7 +79,7 @@ images:
 
 ## 视觉系统
 
-这套主题是“当代文学评论刊物”，不是通用博客模板：
+这套主题是“当代文学评论刊物”，首页按版面组织，而不是按目录组织：
 
 - 书眉/页脚/聆听室/重点面板：深松绿
 - 纸面：骨白
@@ -88,7 +89,7 @@ images:
 - 用色块、卡片、留白和深色面板建立层级；不使用页面分割线
 - 画框是唯一的边框例外
 
-完整的色板、字号、页面头、卡片、混合目录和新增内容类型的规则见 **[DESIGN.md](DESIGN.md)**。
+完整的色板、字号、版面顺序、两栏编辑头、图版/聆听模块和新增内容的规则见 **[DESIGN.md](DESIGN.md)**。
 
 ## 演示内容
 
@@ -103,10 +104,9 @@ images:
 
 ```text
 /                         -> /zh/
-/zh/                      卷首
-/zh/index                 目录：文字、声音、图像混排
+/zh/                      整本 issue：封面 / 特稿 / 图版 / 聆听 / 版权页
 /zh/music                 聆听室（播放器 + 曲库）
-/zh/art                   画廊
+/zh/art                   完整画廊
 /zh/literature/<slug>     单篇文字（技术路径）
 /zh/literature/series/*   小说 / 诗集系列
 /zh/about, /zh/contact    关于 / 联系
@@ -148,19 +148,20 @@ RSS、JSON Feed、canonical、hreflang 和社区导出都会使用它。
 ```text
 src/
 ├─ components/
-│  ├─ IndexList.astro       # 混合目录
+│  ├─ MusicPlayer.astro     # 播放器 + 曲库
+│  ├─ ArtWall.astro         # 画框墙
 │  ├─ ArtLightbox.astro
 │  ├─ ReviewList.astro
 │  ├─ SyndicationLinks.astro
-│  └─ Tabs.astro            # 卷首/目录/关于/联系
+│  └─ Tabs.astro            # 卷首/关于/联系
 ├─ content/ writing/ music/ art/ tracks/
 ├─ i18n/ui.ts
 ├─ layouts/Layout.astro
 ├─ lib/posts.ts
 ├─ pages/[lang]/
-│  ├─ index/index.astro     # 混合目录
+│  ├─ index.astro           # 整本 issue 的版面
 │  ├─ literature/           # 单篇与系列
-│  ├─ music/ art/           # 聆听室 / 画廊
+│  ├─ music/ art/           # 聆听室 / 完整画廊
 │  ├─ about.astro contact.astro
 │  └─ rss.xml.ts feed.json.ts community.json.ts
 ├─ styles/global.css

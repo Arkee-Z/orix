@@ -1,0 +1,54 @@
+---
+import { getUi, type Lang } from "../i18n/ui";
+import type { ArtPiece } from "../lib/posts";
+
+interface Props {
+	pieces: ArtPiece[];
+	lang: Lang;
+}
+
+const { pieces, lang } = Astro.props;
+const t = getUi(lang);
+---
+
+<section class="art-wall" aria-label={t.art.gallery}>
+	{
+		pieces.map((piece, index) => (
+			<figure class="art-piece">
+				<button
+					class="art-frame"
+					type="button"
+					data-art-src={piece.src}
+					data-art-alt={piece.alt}
+					data-art-caption={`${piece.caption ?? piece.entryTitle} — ${piece.artist}${piece.year ? `, ${piece.year}` : ""}${piece.medium ? ` · ${piece.medium}` : ""}`}
+					aria-label={`${lang === "zh" ? "放大" : "Enlarge"} ${piece.caption ?? piece.entryTitle}`}
+				>
+					<span class="art-mat">
+						<img src={piece.src} alt={piece.alt} loading={index > 1 ? "lazy" : "eager"} />
+					</span>
+				</button>
+				<figcaption class="art-caption">
+					<span class="art-caption-title">{piece.caption ?? piece.entryTitle}</span>
+					<span class="art-caption-meta">
+						{piece.artist}
+						{piece.year && (
+							<>
+								<span class="sep" aria-hidden="true">·</span>
+								{piece.year}
+							</>
+						)}
+						{piece.medium && (
+							<>
+								<span class="sep" aria-hidden="true">·</span>
+								{piece.medium}
+							</>
+						)}
+					</span>
+					<a class="art-caption-link" href={piece.href}>
+						{t.art.viewWork} <span aria-hidden="true">→</span>
+					</a>
+				</figcaption>
+			</figure>
+		))
+	}
+</section>

@@ -29,7 +29,7 @@ const t = getUi(lang);
 const kind = group.kind;
 const isPoetry = kind === "poem";
 const first = group.entries[0];
-const categoryPath = "/index";
+const categoryPath = "/";
 const categoryLabel = lang === "zh" ? "系列" : "Series";
 ---
 
@@ -58,7 +58,7 @@ const categoryLabel = lang === "zh" ? "系列" : "Series";
 			<span class="arrow" aria-hidden="true">→</span>
 		</a>
 		<a class="text-link series-back" href={localeHref(lang, categoryPath)}>
-			← {t.nav.catalog}
+			← {t.nav.index}
 		</a>
 	</div>
 

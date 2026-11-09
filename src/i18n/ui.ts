@@ -23,7 +23,6 @@ export function switchLocalePath(pathname: string, target: Lang): string {
 
 export const sectionMeta = [
 	{ key: "index", path: "/", zh: "卷首", en: "Cover" },
-	{ key: "catalog", path: "/index", zh: "目录", en: "Index" },
 	{ key: "about", path: "/about", zh: "关于", en: "About" },
 	{ key: "contact", path: "/contact", zh: "联系", en: "Contact" },
 ] as const;
@@ -95,7 +94,6 @@ const zh = {
 	leafSuffix: "页",
 	nav: {
 		index: "卷首",
-		catalog: "目录",
 		literature: "阅读",
 		music: "聆听室",
 		art: "画廊",
@@ -214,7 +212,6 @@ const en: typeof zh = {
 	leafSuffix: "",
 	nav: {
 		index: "Cover",
-		catalog: "Index",
 		literature: "Reading",
 		music: "Listening Room",
 		art: "Gallery",

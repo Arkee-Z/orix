@@ -1,8 +1,9 @@
 ---
 import Layout from "../../../layouts/Layout.astro";
+import ArtWall from "../../../components/ArtWall.astro";
 import ArtLightbox from "../../../components/ArtLightbox.astro";
 import { getUi, languages, localeHref, type Lang } from "../../../i18n/ui";
-import { artHref, getArt } from "../../../lib/posts";
+import { getArtPieces } from "../../../lib/posts";
 
 export function getStaticPaths() {
 	return languages.map((lang) => ({ params: { lang } }));
@@ -10,32 +11,7 @@ export function getStaticPaths() {
 
 const lang = Astro.params.lang as Lang;
 const t = getUi(lang);
-const entries = await getArt(lang);
-
-const pieces = entries.flatMap((entry) => {
-	const images =
-		entry.data.images.length > 0
-			? entry.data.images
-			: entry.data.cover
-				? [
-						{
-							src: entry.data.cover,
-							alt: entry.data.title,
-							caption: entry.data.work ?? entry.data.title,
-							medium: entry.data.medium,
-							year: entry.data.year,
-						},
-					]
-				: [];
-	return images.map((image) => ({
-		...image,
-		entryTitle: entry.data.title,
-		artist: entry.data.artist,
-		href: artHref(entry, lang),
-		year: image.year ?? entry.data.year,
-		medium: image.medium ?? entry.data.medium,
-	}));
-});
+const pieces = await getArtPieces(lang);
 ---
 
 <Layout
@@ -57,55 +33,7 @@ const pieces = entries.flatMap((entry) => {
 		<span>{pieces.length} {t.art.works}</span>
 	</div>
 
-	{
-		pieces.length > 0 ? (
-			<section class="art-wall" aria-label={t.art.gallery}>
-				{pieces.map((piece, index) => (
-					<figure class="art-piece">
-						<button
-							class="art-frame"
-							type="button"
-							data-art-src={piece.src}
-							data-art-alt={piece.alt}
-							data-art-caption={`${piece.caption ?? piece.entryTitle} — ${piece.artist}${piece.year ? `, ${piece.year}` : ""}${piece.medium ? ` · ${piece.medium}` : ""}`}
-							aria-label={`${lang === "zh" ? "放大" : "Enlarge"} ${piece.caption ?? piece.entryTitle}`}
-						>
-							<span class="art-mat">
-								<img
-									src={piece.src}
-									alt={piece.alt}
-									loading={index > 1 ? "lazy" : "eager"}
-								/>
-							</span>
-						</button>
-						<figcaption class="art-caption">
-							<span class="art-caption-title">{piece.caption ?? piece.entryTitle}</span>
-							<span class="art-caption-meta">
-								{piece.artist}
-								{piece.year && (
-									<>
-										<span class="sep" aria-hidden="true">·</span>
-										{piece.year}
-									</>
-								)}
-								{piece.medium && (
-									<>
-										<span class="sep" aria-hidden="true">·</span>
-										{piece.medium}
-									</>
-								)}
-							</span>
-							<a class="art-caption-link" href={piece.href}>
-								{t.art.viewWork} <span aria-hidden="true">→</span>
-							</a>
-						</figcaption>
-					</figure>
-				))}
-			</section>
-		) : (
-			<p class="empty-note">{t.art.empty}</p>
-		)
-	}
+	{pieces.length > 0 ? <ArtWall pieces={pieces} lang={lang} /> : <p class="empty-note">{t.art.empty}</p>}
 
 	<ArtLightbox lang={lang} />
 </Layout>

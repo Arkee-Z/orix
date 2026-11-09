@@ -1,15 +1,11 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import IndexList from "../../components/IndexList.astro";
+import MusicPlayer from "../../components/MusicPlayer.astro";
+import ArtWall from "../../components/ArtWall.astro";
+import ArtLightbox from "../../components/ArtLightbox.astro";
 import { site } from "../../data/site";
-import {
-	languages,
-	getUi,
-	localeHref,
-	dateLabel,
-	type Lang,
-} from "../../i18n/ui";
-import { getIndexItems } from "../../lib/posts";
+import { languages, getUi, localeHref, dateLabel, type Lang } from "../../i18n/ui";
+import { getPosts, getTracks, getArtPieces, postHref } from "../../lib/posts";
 
 export function getStaticPaths() {
 	return languages.map((lang) => ({ params: { lang } }));
@@ -17,9 +13,17 @@ export function getStaticPaths() {
 
 const lang = Astro.params.lang as Lang;
 const t = getUi(lang);
-const items = await getIndexItems(lang);
-const feature = items[0];
-const recent = items.slice(1, 5);
+const [posts, tracks, art] = await Promise.all([
+	getPosts(lang),
+	getTracks(lang),
+	getArtPieces(lang),
+]);
+
+const feature = posts[0];
+const secondary = posts.slice(1, 5);
+const firstParagraph = feature?.body?.split(/\n\s*\n/)[0]?.replace(/\s+/g, " ") ?? "";
+const quoteMatch = firstParagraph.match(/^(.+?[。！？.!?])(?:\s|$)/);
+const quote = quoteMatch ? quoteMatch[1] : firstParagraph.slice(0, 90);
 ---
 
 <Layout
@@ -59,50 +63,116 @@ const recent = items.slice(1, 5);
 					<span>{lang === "zh" ? "本期" : "Featured"}</span>
 				</div>
 
-				{
-					feature ? (
-						<a class="feature" href={feature.url}>
-							<span class="feature-kind">{t.formats[feature.format]}</span>
-							<h2 class="feature-title">{feature.title}</h2>
-							{feature.summary && <p class="feature-dek">{feature.summary}</p>}
-							<span class="feature-foot">
-								<time datetime={feature.date.toISOString()}>
-									{dateLabel(feature.date, lang)}
-								</time>
-								<span class="feature-cta">
-									{lang === "zh" ? "打开" : "Open"} <span aria-hidden="true">→</span>
-								</span>
+				{feature ? (
+					<a class="feature" href={postHref(feature, lang)}>
+						<span class="feature-kind">{t.formats.text}</span>
+						<h2 class="feature-title">{feature.data.title}</h2>
+						{feature.data.summary && <p class="feature-dek">{feature.data.summary}</p>}
+						<span class="feature-foot">
+							<time datetime={feature.data.date.toISOString()}>
+								{dateLabel(feature.data.date, lang)}
+							</time>
+							<span class="feature-cta">
+								{lang === "zh" ? "打开" : "Open"} <span aria-hidden="true">→</span>
 							</span>
-						</a>
-					) : (
-						<p class="empty-note">{t.home.empty}</p>
-					)
-				}
+						</span>
+					</a>
+				) : (
+					<p class="empty-note">{t.home.empty}</p>
+				)}
 			</aside>
 		</div>
+	</div>
 
-		<section class="home-contents" aria-label={lang === "zh" ? "本期目录" : "Contents"}>
-			<div class="list-head">
-				<span>{lang === "zh" ? "本期目录" : "Contents"}</span>
-				<span>{String(items.length).padStart(2, "0")}</span>
+	{feature && (
+		<section class="spread spread--lede">
+			<div class="spread-head">
+				<span class="spread-no">01</span>
+				<span>{lang === "zh" ? "特稿" : "Features"}</span>
+				<span>{lang === "zh" ? "Features" : "特稿"}</span>
 			</div>
 
-			{recent.length > 0 ? (
-				<IndexList items={recent} lang={lang} compact />
-			) : (
-				<p class="empty-note">{t.home.empty}</p>
-			)}
+			<div class="lede-grid">
+				<article class="lede-main">
+					<span class="lede-format">{t.formats.text}</span>
+					<h2 class="lede-title">
+						<a href={postHref(feature, lang)}>{feature.data.title}</a>
+					</h2>
+					{feature.data.summary && <p class="lede-dek">{feature.data.summary}</p>}
+					<div class="lede-foot">
+						<time datetime={feature.data.date.toISOString()}>
+							{dateLabel(feature.data.date, lang)}
+						</time>
+						<a class="text-link" href={postHref(feature, lang)}>
+							{lang === "zh" ? "读全文" : "Read"} <span aria-hidden="true">→</span>
+						</a>
+					</div>
+				</article>
 
-			<a class="text-link home-contents-link" href={localeHref(lang, "/index")}>
-				{lang === "zh" ? "全部目录" : "Full index"}
-				<span aria-hidden="true">→</span>
+				{(quote || secondary.length > 0) && (
+					<div class="lede-side">
+						{quote && <blockquote class="lede-quote">{quote}</blockquote>}
+						{secondary.map((post, index) => (
+							<a class="lede-side-item" href={postHref(post, lang)}>
+								<span class="lede-side-no">{String(index + 2).padStart(2, "0")}</span>
+								<span class="lede-side-main">
+									<span class="lede-side-title">{post.data.title}</span>
+									<span class="lede-side-meta">
+										{dateLabel(post.data.date, lang)}
+										{post.data.tags[0] && (
+											<>
+												<span class="sep" aria-hidden="true">·</span>
+												{post.data.tags[0]}
+											</>
+										)}
+									</span>
+								</span>
+								<span class="lede-side-arrow" aria-hidden="true">→</span>
+							</a>
+						))}
+					</div>
+				)}
+			</div>
+		</section>
+	)}
+
+	{art.length > 0 && (
+		<section class="spread spread--plates">
+			<div class="spread-head">
+				<span class="spread-no">02</span>
+				<span>{lang === "zh" ? "图版" : "Plates"}</span>
+				<span>{art.length} {lang === "zh" ? "幅" : "plates"}</span>
+			</div>
+
+			<ArtWall pieces={art} lang={lang} />
+
+			<a class="spread-link" href={localeHref(lang, "/art")}>
+				{lang === "zh" ? "进入画廊" : "Enter the gallery"} <span aria-hidden="true">→</span>
 			</a>
 		</section>
+	)}
 
-		<p class="cover-colophon">
-			<span>{t.imprint} · {t.volume}</span>
-			<span>{t.location}</span>
-			<span>{t.since}</span>
-		</p>
-	</div>
+	{tracks.length > 0 && (
+		<section class="spread spread--sound">
+			<div class="spread-head">
+				<span class="spread-no">03</span>
+				<span>{lang === "zh" ? "聆听" : "Listening"}</span>
+				<span>{tracks.length} {lang === "zh" ? "曲" : "tracks"}</span>
+			</div>
+
+			<MusicPlayer tracks={tracks} lang={lang} />
+
+			<a class="spread-link" href={localeHref(lang, "/music")}>
+				{lang === "zh" ? "进入聆听室" : "Enter the listening room"} <span aria-hidden="true">→</span>
+			</a>
+		</section>
+	)}
+
+	<p class="issue-colophon">
+		<span>{t.imprint} · {t.volume}</span>
+		<span>{t.location}</span>
+		<span>{t.since}</span>
+	</p>
+
+	<ArtLightbox lang={lang} />
 </Layout>

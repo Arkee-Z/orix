@@ -183,69 +183,41 @@ export async function getAllContent(lang: Lang): Promise<FeedItem[]> {
 	return items.sort((a, b) => b.date.valueOf() - a.date.valueOf());
 }
 
-export type IndexFormat = "text" | "sound" | "image";
-
-export type IndexItem = {
-	id: string;
-	title: string;
-	date: Date;
-	summary: string;
-	url: string;
-	format: IndexFormat;
-	meta: string;
+export type ArtPiece = {
+	src: string;
+	alt: string;
+	caption?: string;
+	medium?: string;
+	year?: number | string;
+	entryTitle: string;
+	artist: string;
+	href: string;
 };
 
-/**
- * One flat, chronological stream of everything in an issue.
- * No sections by art form: a poem, a track, a painting and a review
- * sit next to each other and are distinguished only by a small mark.
- */
-export async function getIndexItems(lang: Lang): Promise<IndexItem[]> {
-	const [posts, reviews, art, tracks] = await Promise.all([
-		getPosts(lang),
-		getMusic(lang),
-		getArt(lang),
-		getTracks(lang),
-	]);
-
-	const items: IndexItem[] = [
-		...posts.map((entry) => ({
-			id: `text-${entry.id}`,
-			title: entry.data.title,
-			date: entry.data.date,
-			summary: entry.data.summary,
-			url: postHref(entry, lang),
-			format: "text" as const,
-			meta: entry.data.tags[0] ?? "",
-		})),
-		...reviews.map((entry) => ({
-			id: `review-${entry.id}`,
-			title: entry.data.title,
-			date: entry.data.date,
-			summary: entry.data.summary,
-			url: musicHref(entry, lang),
-			format: "text" as const,
-			meta: entry.data.artist,
-		})),
-		...art.map((entry) => ({
-			id: `image-${entry.id}`,
-			title: entry.data.title,
-			date: entry.data.date,
-			summary: entry.data.summary,
-			url: artHref(entry, lang),
-			format: "image" as const,
-			meta: entry.data.artist,
-		})),
-		...tracks.map((entry) => ({
-			id: `sound-${entry.id}`,
-			title: entry.data.title,
-			date: entry.data.date,
-			summary: entry.data.summary,
-			url: `${localeHref(lang, "/music")}#${entry.id}`,
-			format: "sound" as const,
-			meta: entry.data.artist,
-		})),
-	];
-
-	return items.sort((a, b) => b.date.valueOf() - a.date.valueOf());
+export async function getArtPieces(lang: Lang): Promise<ArtPiece[]> {
+	const entries = await getArt(lang);
+	return entries.flatMap((entry) => {
+		const images =
+			entry.data.images.length > 0
+				? entry.data.images
+				: entry.data.cover
+					? [
+							{
+								src: entry.data.cover,
+								alt: entry.data.title,
+								caption: entry.data.work ?? entry.data.title,
+								medium: entry.data.medium,
+								year: entry.data.year,
+							},
+						]
+					: [];
+		return images.map((image) => ({
+			...image,
+			entryTitle: entry.data.title,
+			artist: entry.data.artist,
+			href: artHref(entry, lang),
+			year: image.year ?? entry.data.year,
+			medium: image.medium ?? entry.data.medium,
+		}));
+	});
 }
