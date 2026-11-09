@@ -1,7 +1,8 @@
 # Orix 文艺志
 
 一个以**中文为主**的多语种个人文艺杂志：文学、音乐与美术。
-纸色、墨色、单一朱红；大字号衬线标题、细规则线和大量留白。内容层是纯静态的，音乐有播放器和曲库，美术有画框、画廊和灯箱。
+
+这一版的视觉方向是**当代文学评论刊物**：深松绿书眉、骨白纸面、陶土红 / 赭金 / 鼠尾草色块。标题用 Fraunces 与 Noto Serif SC，界面用 Inter；不再用细分割线组织版式，改用色块、留白、卡片和深色面板。
 
 - 中文版：`/zh/`
 - English edition：`/en/`
@@ -73,6 +74,21 @@ images:
 ```
 
 完整字段、连载、诗、乐评、美术、草稿和译文规则见 **[CONTENT.md](CONTENT.md)**。
+
+## 视觉系统
+
+这不只是一页 CSS，而是一套可复用的主题：
+
+- 书眉/页脚/播放器/重点面板：深松绿
+- 纸面：骨白
+- 强调：陶土红、赭金
+- 第四色：鼠尾草
+- 标题：Fraunces（拉丁）/ Noto Serif SC（中文）
+- 界面：Inter
+- 结构分区用背景色、间距和卡片；不使用页面分割线
+- 画框是唯一的边框例外
+
+完整的色板、字号、两栏编辑头、卡片网格、深色面板和新增内容类型的规则见 **[DESIGN.md](DESIGN.md)**。
 
 ## 演示内容
 
@@ -170,17 +186,17 @@ src/
 │  ├─ rss.xml.ts feed.json.ts community.json.ts
 │  └─ about.astro contact.astro
 ├─ styles/global.css
+public/
+├─ fonts/                   # Noto Serif SC（自托管）
+├─ audio/ music/ art/
 scripts/community-export.mjs
 ```
 
-## 设计说明
+## 字体
 
-- **纸面，不是拟物书壳**：暖纸底色、墨色正文、单一朱红；没有皮革、书脊、六色书签和卡片。保留卷号、版心、页码与书名页的编辑体例。
-- **字体**：标题用 Didot/Palatino 一类的衬线，中文回退宋体/思源宋体；正文使用宋体阅读排版；小标签用极小的无衬线或等宽字。
-- **音乐**：深墨色播放器作为整页唯一的重色块；封面、曲名、进度和曲库保持安静，不堆控件。
-- **美术**：画框由卡纸、细框和轻微投影构成；画廊墙用不对称错位；灯箱只做放大与说明。
-- **语言**：中文默认、英文独立；`<html lang>`、`hreflang`、canonical、语言切换和 RSS 都按语言生成。
-- **无障碍**：skip link、语义化结构、`aria-current`、按钮 label、focus-visible、reduced-motion。
+- Fraunces、Inter 通过 `@fontsource-variable` 本地打包。
+- 中文 Noto Serif SC 以 WOFF2 自托管在 `public/fonts/`，不依赖 Google Fonts。
+- 字体授权文件在 `public/fonts/licenses/` 与 `public/fonts/noto-serif-sc-OFL.txt`。
 
 ![文章内页](docs/preview-article.jpg)
 
