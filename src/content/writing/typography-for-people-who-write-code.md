@@ -1,4 +1,6 @@
 ---
+kind: article
+lang: en
 title: "Typography for People Who Write Code"
 date: 2026-07-12
 summary: "Measure, leading, and the small consolations of a well-set monospace. On treating a screen like a page."

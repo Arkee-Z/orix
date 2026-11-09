@@ -2,104 +2,125 @@
 import "../styles/global.css";
 import Tabs from "../components/Tabs.astro";
 import { site } from "../data/site";
+import {
+	getUi,
+	otherLang,
+	switchLocalePath,
+	type Lang,
+} from "../i18n/ui";
 
 interface Props {
 	title?: string;
 	section: string;
 	folio: string;
+	lang: Lang;
 	description?: string;
 	mainClass?: string;
+	altHref?: string;
 }
 
 const {
 	title,
 	section,
 	folio,
-	description = site.description,
+	lang,
+	description = getUi(lang).description,
 	mainClass,
+	altHref,
 } = Astro.props;
 
+const t = getUi(lang);
+const other = otherLang(lang);
 const pageTitle = title
-	? `${title} — ${site.imprint}`
-	: `${site.imprint} — A Journal of Code & Consequence`;
+	? `${title} — ${t.imprint}`
+	: `${t.imprint} — ${
+			lang === "zh" ? "文学、音乐与美术" : "A Journal of Code & Consequence"
+		}`;
+const otherHref = altHref ?? switchLocalePath(Astro.url.pathname, other);
+const canonical = new URL(Astro.url.pathname, site.url).toString();
+const otherAbsolute = new URL(otherHref, site.url).toString();
+const zhHref = lang === "zh" ? canonical : otherAbsolute;
+const enHref = lang === "en" ? canonical : otherAbsolute;
+const feedHref = lang === "zh" ? "/zh/rss.xml" : "/en/rss.xml";
 ---
 
 
 <!doctype html>
-<html lang="en">
+<html lang={lang === "zh" ? "zh-CN" : "en"}>
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<meta name="theme-color" content="#0c0a09" />
-		<link
-			rel="icon"
-			type="image/svg+xml"
-			href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23111110'/%3E%3Cg fill='none' stroke='%23F4EFE6' stroke-width='4' stroke-linecap='round'%3E%3Cpath d='M7.5 27.5C4.5 20.5 7 10.5 16 4'/%3E%3Cpath d='M24.5 27.5C27.5 20.5 25 10.5 16 4'/%3E%3C/g%3E%3C/svg%3E"
-		/>
+		<meta name="theme-color" content="#f4efe5" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<meta name="description" content={description} />
 		<meta property="og:title" content={pageTitle} />
 		<meta property="og:description" content={description} />
 		<meta property="og:type" content="website" />
+		<meta property="og:locale" content={lang === "zh" ? "zh_CN" : "en_US"} />
+		<meta property="og:locale:alternate" content={lang === "zh" ? "en_US" : "zh_CN"} />
 		<meta name="twitter:card" content="summary" />
 		<title>{pageTitle}</title>
+		<link rel="canonical" href={canonical} />
+		<link rel="alternate" hreflang="zh-CN" href={zhHref} />
+		<link rel="alternate" hreflang="en" href={enHref} />
+		<link rel="alternate" hreflang="x-default" href={zhHref} />
 		<link
-			rel="preload"
-			href="/fonts/plex-300.woff2"
-			as="font"
-			type="font/woff2"
-			crossorigin
+			rel="alternate"
+			type="application/rss+xml"
+			title={`${t.siteName} · RSS`}
+			href={feedHref}
 		/>
 		<link
 			rel="preload"
-			href="/fonts/plex-400i.woff2"
-			as="font"
-			type="font/woff2"
-			crossorigin
-		/>
-		<link
-			rel="preload"
-			href="/fonts/space-700.woff2"
+			href="/fonts/plex-400.woff2"
 			as="font"
 			type="font/woff2"
 			crossorigin
 		/>
 	</head>
 	<body>
-		<a class="skip-link" href="#main">Skip to the page</a>
+		<a class="skip-link" href="#main">{t.skip}</a>
 
-		<div class="stage">
-			<div class="book-wrap">
-				<Tabs />
+		<header class="site-header">
+			<div class="header-inner">
+				<a class="brand" href={lang === "zh" ? "/zh/" : "/en/"}>
+					<span class="brand-word">Orix</span>
+					<span class="brand-cn">{lang === "zh" ? "文艺志" : "Journal"}</span>
+				</a>
 
-				<div class="book">
-					<div class="spine" aria-hidden="true">
-						<span class="band band-top"></span>
-						<span class="spine-year">{site.year}</span>
-						<span class="spine-title">Orix · A Journal of Code</span>
-						<span class="spine-mark">❦</span>
-						<span class="band band-bottom"></span>
-					</div>
+				<Tabs lang={lang} />
 
-					<div class="page">
-						<div class="page-head">
-							<span class="rh-section">{section}</span>
-							<span class="rh-right">{site.imprint} · {site.volume}</span>
-						</div>
-
-						<main class:list={["leaf", mainClass]} id="main" tabindex="0">
-							<div class="leaf-inner">
-								<slot />
-							</div>
-						</main>
-
-						<div class="folio">
-							<span class="folio-left">{site.since} · {site.location}</span>
-							<span class="folio-right">Leaf {folio}</span>
-						</div>
-					</div>
+				<div class="header-tools">
+					<span class="header-issue">{t.volume} · No. {site.issue}</span>
+					<a
+						class="lang-switch"
+						href={otherHref}
+						hreflang={other === "zh" ? "zh-CN" : "en"}
+						lang={other === "zh" ? "zh-CN" : "en"}
+					>
+						{t.switchLanguage}
+					</a>
 				</div>
 			</div>
-		</div>
+		</header>
+
+		<main class="site-main" id="main" data-section={section}>
+			<div class:list={["page-content", mainClass]}>
+				<slot />
+			</div>
+		</main>
+
+		<footer class="site-footer">
+			<div class="footer-inner">
+				<span>{t.imprint} · {t.volume} · {t.since}</span>
+				<span>{section} · {folio}</span>
+				<span class="footer-links">
+					<a href={feedHref}>RSS</a>
+					<span aria-hidden="true">/</span>
+					<a href={`mailto:${site.email}`}>{lang === "zh" ? "来信" : "Email"}</a>
+				</span>
+			</div>
+		</footer>
 	</body>
 </html>

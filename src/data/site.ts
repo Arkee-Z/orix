@@ -1,7 +1,11 @@
 export const site = {
 	name: "Gene Max Zhang",
+	url:
+		(import.meta.env.ORIX_SITE_URL as string | undefined) ??
+		"https://orix.example",
+	issue: "04",
 	description:
-		"The notebook of Gene Max Zhang — essays and field notes on terminals, Rust, TypeScript, and the craft of building for the web.",
+		"A personal arts and literature magazine in Chinese and English: writing, music and art, kept like a book.",
 	email: "gene.max.zheng@foxmail.com",
 	github: "https://github.com/Arkee-Z",
 	githubLabel: "github.com/Arkee-Z",
@@ -12,20 +16,6 @@ export const site = {
 	year: "MMXXVI",
 	since: "Est. MMXIX",
 } as const;
-
-export type NavItem = {
-	label: string;
-	href: string;
-	color: string;
-};
-
-export const nav: NavItem[] = [
-	{ label: "Index", href: "/", color: "#76382e" },
-	{ label: "Writing", href: "/writing", color: "#795d33" },
-	{ label: "Notes", href: "/notes", color: "#55603b" },
-	{ label: "About", href: "/about", color: "#405a57" },
-	{ label: "Contact", href: "/contact", color: "#56435a" },
-];
 
 const dateFormatter = new Intl.DateTimeFormat("en-GB", {
 	day: "2-digit",

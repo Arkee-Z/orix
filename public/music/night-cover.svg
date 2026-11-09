@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800">
+  <rect width="800" height="800" fill="#1c2621"/>
+  <circle cx="535" cy="275" r="128" fill="#e9e1d1"/>
+  <circle cx="580" cy="248" r="128" fill="#1c2621"/>
+  <path d="M0 586h800" stroke="#a63d2d" stroke-width="2"/>
+  <path d="M0 610h800M0 634h800" stroke="#e9e1d1" stroke-width="1" opacity=".22"/>
+  <text x="96" y="738" font-family="Georgia, serif" font-size="24" letter-spacing="6" fill="#e9e1d1">ORIX · NIGHT STUDIES</text>
+</svg>

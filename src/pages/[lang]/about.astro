@@ -1,0 +1,93 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { site } from "../../data/site";
+import { getUi, languages, localeHref, type Lang } from "../../i18n/ui";
+
+export function getStaticPaths() {
+	return languages.map((lang) => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Lang;
+const t = getUi(lang);
+
+const copy =
+	lang === "zh"
+		? {
+				title: "关于",
+				dek: "写作者、工程师、读者。",
+				paragraphs: [
+					"我在终端里构建网页。工作横跨 Rust、TypeScript 与 Go，从数据库结构、HTTP 处理到页面最后一个像素。这个刊物本身也是一次终端驱动的实验：编辑、排版和发布，都在命令行里完成。",
+					"我相信终端是开发者与机器之间最诚实的界面。其他东西都是装饰。这种判断体现在我选择的工具、设计的界面，以及我对那些表演自信、却不报告真实状态的软件的耐心上。",
+					"我住在成都，雨多，茶比咖啡好。不发布的时候，我读源码、在页边做笔记，并慢慢学着把句子写短。",
+				],
+				quote: "代码是用逻辑写成的诗。",
+				quoteCite: "工作格言",
+				nowLabel: "现在",
+				nowText:
+					"维护 Orix 文艺志，写文学、音乐与美术的笔记；做小而完整的工具。",
+				elsewhereLabel: "在别处",
+				colophon: "Orix 文艺志使用 Astro 构建，纯静态输出。",
+		  }
+		: {
+				title: "About",
+				dek: "Writer, engineer, reader.",
+				paragraphs: [
+					"I build the web through terminals. My work spans full-stack engineering with a focus on Rust, TypeScript, and Go — from database schemas and HTTP handlers to the last pixel of a page. This magazine itself is a terminal-driven experiment: edited, set, and published from the command line.",
+					"I believe the terminal is the most honest interface between a developer and their machine. Everything else is decoration. That belief shows up in the tools I choose, the interfaces I design, and the amount of patience I have for software that performs confidence instead of reporting state.",
+					"I live in Chengdu, where the rain is frequent and the tea is better than the coffee. When I am not shipping, I am reading source code, taking notes in the margins, and slowly learning to write shorter sentences.",
+				],
+				quote: "Code is poetry written in logic.",
+				quoteCite: "Working motto",
+				nowLabel: "Now",
+				nowText:
+					"Keeping Orix Journal, writing about literature, music and art, and making small tools that finish.",
+				elsewhereLabel: "Elsewhere",
+				colophon: "Orix Journal is built with Astro and shipped as static HTML.",
+		  };
+---
+
+<Layout
+	title={copy.title}
+	section={t.nav.about}
+	folio="05"
+	lang={lang}
+	description={copy.dek}
+	altHref={localeHref(lang === "zh" ? "en" : "zh", "/about")}
+>
+	<header class="page-head-block">
+		<p class="imprint">05 — {copy.title}</p>
+		<h1 class="page-title">{copy.title}</h1>
+		<p class="page-dek">{copy.dek}</p>
+	</header>
+
+	<div class="about-page">
+		<div class="about-main">
+			<div class="about-copy">
+				{copy.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+			</div>
+
+			<blockquote class="motto">
+				“{copy.quote}”
+				<cite>— {copy.quoteCite}</cite>
+			</blockquote>
+		</div>
+
+		<aside class="about-aside">
+			<div class="meta-block">
+				<span class="meta-label">{copy.nowLabel}</span>
+				<span class="meta-value">{copy.nowText}</span>
+			</div>
+			<div class="meta-block">
+				<span class="meta-label">{copy.elsewhereLabel}</span>
+				<span class="meta-value">
+					<a href={site.github} rel="me">{site.githubLabel}</a>
+				</span>
+			</div>
+			<div class="meta-block">
+				<span class="meta-label">{lang === "zh" ? "地点" : "Place"}</span>
+				<span class="meta-value">{t.location}</span>
+			</div>
+			<p class="about-colophon">{copy.colophon}</p>
+		</aside>
+	</div>
+</Layout>

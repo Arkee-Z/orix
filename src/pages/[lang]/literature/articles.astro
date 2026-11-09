@@ -1,0 +1,12 @@
+---
+import LiteratureCategory from "../../../components/LiteratureCategory.astro";
+import { languages, type Lang } from "../../../i18n/ui";
+
+export function getStaticPaths() {
+	return languages.map((lang) => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Lang;
+---
+
+<LiteratureCategory lang={lang} kind="article" />

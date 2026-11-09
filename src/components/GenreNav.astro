@@ -1,0 +1,34 @@
+---
+import { genres, localeHref, type GenreKey, type Lang } from "../i18n/ui";
+import { getPosts } from "../lib/posts";
+
+interface Props {
+	lang: Lang;
+	active?: GenreKey;
+}
+
+const { lang, active } = Astro.props;
+const items = await Promise.all(
+	genres.map(async (genre) => ({
+		genre,
+		count: (await getPosts(lang, genre.key)).length,
+	})),
+);
+---
+
+<nav class="genre-nav" aria-label={lang === "zh" ? "文学分类" : "Literature categories"}>
+	{
+		items.map(({ genre, count }, index) => (
+			<a
+				href={localeHref(lang, genre.path)}
+				class:list={["genre-nav-item", { "is-active": active === genre.key }]}
+				aria-current={active === genre.key ? "page" : undefined}
+			>
+				<span class="genre-nav-no">{String(index + 1).padStart(2, "0")}</span>
+				<span class="genre-nav-label">{genre[lang]}</span>
+				<span class="genre-nav-other">{lang === "zh" ? genre.en : genre.zh}</span>
+				<span class="genre-nav-count">{count}</span>
+			</a>
+		))
+	}
+</nav>

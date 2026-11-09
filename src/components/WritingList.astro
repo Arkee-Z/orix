@@ -1,0 +1,59 @@
+---
+import type { Post } from "../lib/posts";
+import { genreMeta, postHref } from "../lib/posts";
+import { dateLabel } from "../i18n/ui";
+import { roman } from "../data/site";
+import type { Lang } from "../i18n/ui";
+
+interface Props {
+	entries: Post[];
+	lang: Lang;
+	showKind?: boolean;
+	empty?: string;
+}
+
+const { entries, lang, showKind = false, empty } = Astro.props;
+---
+
+{
+	entries.length ? (
+		<ol class="toc">
+			{entries.map((entry, index) => (
+				<li class="toc-item">
+					<a class="toc-link" href={postHref(entry, lang)}>
+						<span class="toc-no">{roman(index + 1)}</span>
+						<span class="toc-main">
+							<span class="toc-title">{entry.data.title}</span>
+							<span class="toc-leader" aria-hidden="true" />
+						</span>
+						<time class="toc-date" datetime={entry.data.date.toISOString()}>
+							{dateLabel(entry.data.date, lang)}
+						</time>
+						<span class="toc-sub">
+							{showKind && (
+								<span class="tag toc-kind">{genreMeta(entry.data.kind)[lang]}</span>
+							)}
+							{entry.data.tags
+								.filter((tag) => {
+									const meta = genreMeta(entry.data.kind);
+									return tag !== meta.zh && tag !== meta.en;
+								})
+								.map((tag) => (
+									<span class="tag">{tag}</span>
+								))}
+							{entry.data.minutes && (
+								<>
+									<span class="sep" aria-hidden="true">·</span>
+									<span>{entry.data.minutes} {lang === "zh" ? "分钟" : "min"}</span>
+								</>
+							)}
+						</span>
+						{entry.data.summary && <span class="toc-summary">{entry.data.summary}</span>}
+					</a>
+				</li>
+			))}
+		</ol>
+	) : (
+		<p class="empty-note">{empty}</p>
+	)
+}

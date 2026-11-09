@@ -1,0 +1,59 @@
+---
+import { dateLabel, stars, type Lang } from "../i18n/ui";
+
+export type ReviewListItem = {
+	href: string;
+	title: string;
+	byline: string;
+	meta?: string;
+	summary?: string;
+	date: Date;
+	rating?: number;
+};
+
+interface Props {
+	items: ReviewListItem[];
+	lang: Lang;
+	empty: string;
+}
+
+const { items, lang, empty } = Astro.props;
+---
+
+{
+	items.length ? (
+		<ol class="review-list">
+			{items.map((item, index) => (
+				<li class="review-item">
+					<a class="review-row" href={item.href}>
+						<span class="review-no">{String(index + 1).padStart(2, "0")}</span>
+						<span class="review-main">
+							<span class="review-byline">{item.byline}</span>
+							<span class="review-title">{item.title}</span>
+							{item.summary && <span class="review-summary">{item.summary}</span>}
+							<span class="review-meta">
+								<time datetime={item.date.toISOString()}>{dateLabel(item.date, lang)}</time>
+								{item.meta && (
+									<>
+										<span class="sep" aria-hidden="true">·</span>
+										<span>{item.meta}</span>
+									</>
+								)}
+							</span>
+						</span>
+						<span class="review-side">
+							{item.rating !== undefined && (
+								<span class="review-stars" aria-label={`${item.rating}/5`}>
+									{stars(item.rating)}
+								</span>
+							)}
+							<span class="review-arrow" aria-hidden="true">→</span>
+						</span>
+					</a>
+				</li>
+			))}
+		</ol>
+	) : (
+		<p class="empty-note">{empty}</p>
+	)
+}

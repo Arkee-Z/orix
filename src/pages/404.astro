@@ -1,23 +1,15 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import { localeHref } from "../i18n/ui";
 ---
-
-<Layout
-	title="Page not found"
-	section="Missing Leaf"
-	folio="—"
-	description="This leaf was torn out of the journal."
->
+<Layout lang="zh" section="迷路" folio="—" altHref="/en/" title="页面不存在">
 	<div class="lost">
 		<p class="lost-figure" aria-hidden="true">404</p>
-		<h1 class="lost-title">This leaf was torn out.</h1>
+		<h1 class="lost-title">这一页不在本卷里。</h1>
 		<p>
-			The page you asked for is not in this volume. It may have been moved,
-			renamed, or never written at all — the archive is honest about that sort of
-			thing.
+			你找的页面可能已移动、更名，或只是还没写出来。回到卷首，或者从英文版重新开始。
 		</p>
-		<a class="btn" href="/">
-			Return to the index <span class="arrow" aria-hidden="true">→</span>
-		</a>
+		<p class="lost-en">This page is not in this issue. <a href="/en/">Open the English edition →</a></p>
+		<a class="btn" href={localeHref("zh", "/")}>返回卷首 <span class="arrow" aria-hidden="true">→</span></a>
 	</div>
 </Layout>

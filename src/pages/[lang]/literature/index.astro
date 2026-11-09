@@ -1,0 +1,82 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import WritingList from "../../../components/WritingList.astro";
+import {
+	genres,
+	getUi,
+	languages,
+	localeHref,
+	type Lang,
+} from "../../../i18n/ui";
+import { getPosts, genreHref } from "../../../lib/posts";
+
+export function getStaticPaths() {
+	return languages.map((lang) => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Lang;
+const t = getUi(lang);
+const posts = await getPosts(lang);
+const counts = await Promise.all(
+	genres.map(async (genre) => ({
+		genre,
+		count: (await getPosts(lang, genre.key)).length,
+	})),
+);
+const recent = posts.slice(0, 6);
+---
+
+<Layout
+	title={t.literature.title}
+	section={t.literature.section}
+	folio="02"
+	lang={lang}
+	description={t.literature.de}
+	altHref={localeHref(lang === "zh" ? "en" : "zh", "/literature")}
+>
+	<header class="page-head-block">
+		<p class="imprint">02 — {t.literature.section}</p>
+		<h1 class="page-title">{t.literature.title}</h1>
+		<p class="page-dek">{t.literature.de}</p>
+	</header>
+
+	<ol class="genre-index" aria-label={lang === "zh" ? "文学分类" : "Literature categories"}>
+		{
+			counts.map(({ genre, count }, index) => (
+				<li>
+					<a class="genre-row" href={genreHref(genre.key, lang)}>
+						<span class="genre-row-no">{String(index + 1).padStart(2, "0")}</span>
+						<span class="genre-row-name">
+							{genre[lang]}
+							<em>{lang === "zh" ? genre.en : genre.zh}</em>
+						</span>
+						<span class="genre-row-dek">
+							{lang === "zh" ? genre.zhDek : genre.enDek}
+						</span>
+						<span class="genre-row-count">
+							{count} {lang === "zh" ? "篇" : count === 1 ? "piece" : "pieces"}
+						</span>
+						<span class="genre-row-arrow" aria-hidden="true">→</span>
+					</a>
+				</li>
+			))
+		}
+	</ol>
+
+	<section class="literature-latest">
+		<div class="list-head">
+			<span>{t.literature.latest}</span>
+			<span>
+				{String(recent.length).padStart(2, "0")} / {String(posts.length).padStart(2, "0")}
+			</span>
+		</div>
+		<WritingList
+			entries={recent}
+			lang={lang}
+			showKind
+			empty={t.literature.empty}
+		/>
+	</section>
+
+	<p class="end-mark" aria-hidden="true">· · ·</p>
+</Layout>

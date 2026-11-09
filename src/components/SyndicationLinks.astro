@@ -1,0 +1,37 @@
+---
+import { getUi, platformLabels, type Lang } from "../i18n/ui";
+
+interface Props {
+	links: { platform: string; url: string; label?: string }[];
+	lang: Lang;
+}
+
+const { links, lang } = Astro.props;
+const t = getUi(lang);
+
+const labelFor = (link: Props["links"][number]) =>
+	link.label ?? platformLabels[link.platform]?.[lang] ?? link.platform;
+---
+
+{
+	links.length > 0 && (
+		<section class="sync-block" aria-label={t.sync.label}>
+			<p class="sync-label">{t.sync.label}</p>
+			<p class="sync-note">{t.sync.note}</p>
+			<ul class="sync-links">
+				{links.map((link) => (
+					<li>
+						<a
+							href={link.url}
+							rel="syndication"
+							class="u-syndication"
+							target="_blank"
+						>
+							{labelFor(link)} <span class="arrow" aria-hidden="true">↗</span>
+						</a>
+					</li>
+				))}
+			</ul>
+		</section>
+	)
+}

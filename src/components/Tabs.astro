@@ -1,25 +1,27 @@
 ---
-import { nav } from "../data/site";
+import { sectionMeta, localeHref, type Lang } from "../i18n/ui";
 
-const path = Astro.url.pathname.replace(/\/+$/, "") || "/";
+interface Props {
+	lang: Lang;
+}
 
-function isActive(href: string): boolean {
-	const target = href.replace(/\/+$/, "") || "/";
+const { lang } = Astro.props;
+const path = Astro.url.pathname.replace(/^\/(zh|en)(?=\/|$)/, "") || "/";
+
+function isActive(target: string): boolean {
 	return target === "/" ? path === "/" : path === target || path.startsWith(`${target}/`);
 }
 ---
 
-<nav class="tabs" aria-label="Journal sections">
+<nav class="site-nav" aria-label={lang === "zh" ? "栏目" : "Departments"}>
 	{
-		nav.map((item, index) => (
+		sectionMeta.map((item) => (
 			<a
-				href={item.href}
-				class:list={["tab", { "is-active": isActive(item.href) }]}
-				style={`--tab-bg: ${item.color}`}
-				aria-current={isActive(item.href) ? "page" : undefined}
+				href={localeHref(lang, item.path)}
+				class:list={["nav-link", { "is-active": isActive(item.path) }]}
+				aria-current={isActive(item.path) ? "page" : undefined}
 			>
-				<span class="tab-no">{String(index + 1).padStart(2, "0")}</span>
-				<span class="tab-label">{item.label}</span>
+				{item[lang]}
 			</a>
 		))
 	}

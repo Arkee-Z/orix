@@ -1,4 +1,6 @@
 ---
+kind: article
+lang: en
 title: "A Blog Engine in Three Hundred Lines"
 date: 2026-09-27
 summary: "Deno, SQLite, and a publishing pipeline small enough to read in one sitting. What happens when you stop renting your own website."

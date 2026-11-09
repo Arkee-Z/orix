@@ -1,0 +1,315 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ReviewList from "../../../components/ReviewList.astro";
+import { getUi, languages, localeHref, type Lang } from "../../../i18n/ui";
+import { getMusic, getTracks, musicHref } from "../../../lib/posts";
+
+export function getStaticPaths() {
+	return languages.map((lang) => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Lang;
+const t = getUi(lang);
+const [tracks, reviews] = await Promise.all([getTracks(lang), getMusic(lang)]);
+
+const playlist = tracks.map((entry) => ({
+	id: entry.id,
+	title: entry.data.title,
+	artist: entry.data.artist,
+	album: entry.data.album ?? "",
+	duration: entry.data.duration ?? "",
+	audio: entry.data.audio,
+	cover: entry.data.cover ?? "",
+	tags: entry.data.tags,
+}));
+const first = tracks[0];
+const trackJson = JSON.stringify(playlist).replaceAll("<", "\\u003c");
+
+const reviewItems = reviews.map((entry) => ({
+	href: musicHref(entry, lang),
+	title: entry.data.title,
+	byline: entry.data.artist,
+	meta: [entry.data.release, entry.data.year, entry.data.medium].filter(Boolean).join(" · "),
+	summary: entry.data.summary,
+	date: entry.data.date,
+	rating: entry.data.rating,
+}));
+---
+
+<Layout
+	title={t.music.title}
+	section={t.music.section}
+	folio="03"
+	lang={lang}
+	description={t.music.de}
+	altHref={localeHref(lang === "zh" ? "en" : "zh", "/music")}
+>
+	<header class="page-head-block">
+		<p class="imprint">03 — {t.music.section}</p>
+		<h1 class="page-title">{t.music.title}</h1>
+		<p class="page-dek">{t.music.de}</p>
+	</header>
+
+	{
+		first ? (
+			<section class="player" data-player data-playing="false" aria-label={t.music.nowPlaying}>
+				<div class="player-cover" data-player-cover-wrap>
+					{first.data.cover ? (
+						<img
+							data-player-cover
+							src={first.data.cover}
+							alt=""
+							width="640"
+							height="640"
+						/>
+					) : (
+						<img data-player-cover alt="" width="640" height="640" />
+					)}
+				</div>
+
+				<div class="player-main">
+					<div class="player-top">
+						<span class="player-label">{t.music.nowPlaying}</span>
+						<span class="player-index" data-player-index>
+							01 / {String(tracks.length).padStart(2, "0")}
+						</span>
+					</div>
+
+					<h2 class="player-title" data-player-title>{first.data.title}</h2>
+					<p class="player-meta">
+						<span data-player-artist>{first.data.artist}</span>
+						<span class="sep" aria-hidden="true">·</span>
+						<span data-player-album>{first.data.album ?? ""}</span>
+					</p>
+
+					<div class="player-timeline">
+						<span class="player-time" data-current>0:00</span>
+						<input
+							class="player-seek"
+							data-seek
+							type="range"
+							min="0"
+							max="100"
+							value="0"
+							step="0.1"
+							aria-label={lang === "zh" ? "播放进度" : "Seek"}
+						/>
+						<span class="player-time" data-duration>{first.data.duration ?? "0:00"}</span>
+					</div>
+
+					<div class="player-controls">
+						<button class="player-skip" type="button" data-prev aria-label={t.music.previous}>
+							<span aria-hidden="true">←</span>
+						</button>
+						<button
+							class="player-play"
+							type="button"
+							data-play
+							aria-label={t.music.play}
+							aria-pressed="false"
+						>
+							<span class="icon-play" aria-hidden="true"></span>
+							<span class="icon-pause" aria-hidden="true"></span>
+						</button>
+						<button class="player-skip" type="button" data-next aria-label={t.music.next}>
+							<span aria-hidden="true">→</span>
+						</button>
+					</div>
+				</div>
+			</section>
+		) : (
+			<p class="empty-note">{t.music.noTracks}</p>
+		)
+	}
+
+	{tracks.length > 0 && (
+		<p class="player-demo-note">
+			{lang === "zh"
+				? "当前曲目与音频为版式演示，可在 src/content/tracks 中替换。"
+				: "Current tracks are layout demos. Replace them in src/content/tracks."}
+		</p>
+	)}
+
+	{
+		tracks.length > 0 && (
+			<section class="music-library" aria-label={t.music.library}>
+				<div class="list-head">
+					<span>{t.music.library}</span>
+					<span>
+						{tracks.length} {t.music.tracks}
+					</span>
+				</div>
+
+				<ol class="track-list">
+					{tracks.map((entry, index) => (
+						<li>
+							<button
+								class="track-row"
+								type="button"
+								data-track-index={index}
+								aria-label={`${t.music.play} ${entry.data.title}`}
+							>
+								<span class="track-no">{String(index + 1).padStart(2, "0")}</span>
+								<span class="track-main">
+									<span class="track-title">{entry.data.title}</span>
+									<span class="track-meta">
+										{entry.data.artist}
+										{entry.data.album && (
+											<>
+												<span class="sep" aria-hidden="true">·</span>
+												{entry.data.album}
+											</>
+										)}
+									</span>
+								</span>
+								<span class="track-duration">{entry.data.duration ?? ""}</span>
+								<span class="track-action" aria-hidden="true">▶</span>
+							</button>
+						</li>
+					))}
+				</ol>
+			</section>
+		)
+	}
+
+	{
+		reviewItems.length > 0 && (
+			<section class="music-notes">
+				<div class="list-head">
+					<span>{t.music.reviews}</span>
+					<span>{reviewItems.length}</span>
+				</div>
+				<ReviewList items={reviewItems} lang={lang} empty={t.music.empty} />
+			</section>
+		)
+	}
+
+	<script type="application/json" id="track-data" set:html={trackJson}></script>
+	<audio data-audio preload="metadata" hidden></audio>
+
+	<script is:inline>
+		(() => {
+			const player = document.querySelector("[data-player]");
+			const dataEl = document.getElementById("track-data");
+			if (!player || !dataEl) return;
+			let data = [];
+			try {
+				data = JSON.parse(dataEl.textContent || "[]");
+			} catch {
+				return;
+			}
+			if (!data.length) return;
+
+			const audio = document.querySelector("[data-audio]");
+			const $ = (selector) => player.querySelector(selector);
+			const title = $("[data-player-title]");
+			const artist = $("[data-player-artist]");
+			const album = $("[data-player-album]");
+			const cover = $("[data-player-cover]");
+			const coverWrap = $("[data-player-cover-wrap]");
+			const indexLabel = $("[data-player-index]");
+			const current = $("[data-current]");
+			const duration = $("[data-duration]");
+			const seek = $("[data-seek]");
+			const playButton = $("[data-play]");
+			const prev = $("[data-prev]");
+			const next = $("[data-next]");
+			const rows = Array.from(document.querySelectorAll("[data-track-index]"));
+			let index = 0;
+
+			const fmt = (seconds) => {
+				if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
+				const minutes = Math.floor(seconds / 60);
+				const rest = Math.floor(seconds % 60);
+				return `${minutes}:${String(rest).padStart(2, "0")}`;
+			};
+
+			const paintProgress = () => {
+				const total = audio.duration;
+				const pct = Number.isFinite(total) && total > 0 ? (audio.currentTime / total) * 100 : 0;
+				seek.value = String(pct);
+				seek.style.setProperty("--pct", `${pct}%`);
+			};
+
+			const paintPlay = () => {
+				const playing = !audio.paused;
+				player.dataset.playing = playing ? "true" : "false";
+				playButton.setAttribute("aria-pressed", playing ? "true" : "false");
+				playButton.setAttribute("aria-label", playing ? player.dataset.pauseLabel : player.dataset.playLabel);
+			};
+
+			const setTrack = (nextIndex, autoplay) => {
+				index = (nextIndex + data.length) % data.length;
+				const track = data[index];
+				audio.src = track.audio;
+				audio.load();
+				title.textContent = track.title;
+				artist.textContent = track.artist;
+				album.textContent = track.album || "";
+				indexLabel.textContent = `${String(index + 1).padStart(2, "0")} / ${String(data.length).padStart(2, "0")}`;
+				duration.textContent = track.duration || "0:00";
+				current.textContent = "0:00";
+				seek.value = "0";
+				seek.style.setProperty("--pct", "0%");
+				if (track.cover) {
+					cover.src = track.cover;
+					coverWrap.classList.remove("is-empty");
+				} else {
+					cover.removeAttribute("src");
+					coverWrap.classList.add("is-empty");
+				}
+				rows.forEach((row, rowIndex) => {
+					const active = rowIndex === index;
+					row.classList.toggle("is-active", active);
+					row.setAttribute("aria-current", active ? "true" : "false");
+				});
+				if (autoplay) {
+					audio.play().catch(() => paintPlay());
+				} else {
+					paintPlay();
+				}
+			};
+
+			player.dataset.playLabel = playButton.getAttribute("aria-label");
+			player.dataset.pauseLabel = player.dataset.playLabel === "播放" ? "暂停" : "Pause";
+
+			playButton.addEventListener("click", () => {
+				if (audio.paused) audio.play().catch(() => {});
+				else audio.pause();
+			});
+			prev.addEventListener("click", () => setTrack(index - 1, !audio.paused));
+			next.addEventListener("click", () => setTrack(index + 1, !audio.paused));
+
+			rows.forEach((row) => {
+				row.addEventListener("click", () => {
+					const nextIndex = Number(row.getAttribute("data-track-index"));
+					if (nextIndex === index) {
+						if (audio.paused) audio.play().catch(() => {});
+						else audio.pause();
+					} else {
+						setTrack(nextIndex, true);
+					}
+				});
+			});
+
+			audio.addEventListener("play", paintPlay);
+			audio.addEventListener("pause", paintPlay);
+			audio.addEventListener("timeupdate", () => {
+				current.textContent = fmt(audio.currentTime);
+				paintProgress();
+			});
+			audio.addEventListener("loadedmetadata", () => {
+				duration.textContent = fmt(audio.duration);
+				paintProgress();
+			});
+			audio.addEventListener("ended", () => setTrack(index + 1, true));
+			seek.addEventListener("input", () => {
+				if (Number.isFinite(audio.duration)) {
+					audio.currentTime = (Number(seek.value) / 100) * audio.duration;
+				}
+			});
+
+			setTrack(0, false);
+		})();
+	</script>
+</Layout>

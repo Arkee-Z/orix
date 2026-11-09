@@ -1,0 +1,44 @@
+---
+import Layout from "../layouts/Layout.astro";
+import GenreNav from "./GenreNav.astro";
+import WritingList from "./WritingList.astro";
+import { getUi, localeHref, type GenreKey, type Lang } from "../i18n/ui";
+import { genreMeta, getPosts } from "../lib/posts";
+
+interface Props {
+	lang: Lang;
+	kind: GenreKey;
+}
+
+const { lang, kind } = Astro.props;
+const t = getUi(lang);
+const genre = genreMeta(kind);
+const entries = await getPosts(lang, kind);
+const title = genre[lang];
+const dek = lang === "zh" ? genre.zhDek : genre.enDek;
+---
+
+<Layout
+	title={title}
+	section={t.literature.section}
+	folio="02"
+	lang={lang}
+	description={dek}
+	altHref={localeHref(lang === "zh" ? "en" : "zh", genre.path)}
+>
+	<header class="page-head-block">
+		<p class="imprint">02 — {title}</p>
+		<h1 class="page-title">{title}</h1>
+		<p class="page-dek">{dek}</p>
+	</header>
+
+	<nav class="category-back" aria-label={t.literature.back}>
+		<a href={localeHref(lang, "/literature")}>← {t.literature.back}</a>
+	</nav>
+
+	<GenreNav lang={lang} active={kind} />
+
+	<WritingList entries={entries} lang={lang} empty={t.literature.empty} />
+
+	<p class="end-mark">— {lang === "zh" ? "完" : "fin"} —</p>
+</Layout>

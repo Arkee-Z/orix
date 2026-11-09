@@ -1,0 +1,46 @@
+---
+import type { Lang } from "../i18n/ui";
+
+interface Props {
+	lang: Lang;
+}
+
+const { lang } = Astro.props;
+const closeLabel = lang === "zh" ? "关闭" : "Close";
+---
+
+<dialog class="art-lightbox" data-art-lightbox aria-label={lang === "zh" ? "作品大图" : "Artwork"}>
+	<button class="lightbox-close" type="button" data-art-close aria-label={closeLabel}>
+		<span aria-hidden="true">×</span>
+	</button>
+	<figure class="lightbox-figure">
+		<img data-art-image alt="" />
+		<figcaption data-art-caption></figcaption>
+	</figure>
+</dialog>
+
+<script is:inline>
+	(() => {
+		const dialog = document.querySelector("[data-art-lightbox]");
+		if (!dialog) return;
+		const image = dialog.querySelector("[data-art-image]");
+		const caption = dialog.querySelector("[data-art-caption]");
+		const close = dialog.querySelector("[data-art-close]");
+		const triggers = document.querySelectorAll("[data-art-src]");
+
+		triggers.forEach((trigger) => {
+			trigger.addEventListener("click", () => {
+				image.src = trigger.getAttribute("data-art-src") || "";
+				image.alt = trigger.getAttribute("data-art-alt") || "";
+				caption.textContent = trigger.getAttribute("data-art-caption") || "";
+				if (typeof dialog.showModal === "function") dialog.showModal();
+				else dialog.setAttribute("open", "");
+			});
+		});
+
+		close.addEventListener("click", () => dialog.close());
+		dialog.addEventListener("click", (event) => {
+			if (event.target === dialog) dialog.close();
+		});
+	})();
+</script>

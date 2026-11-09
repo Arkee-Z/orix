@@ -1,4 +1,6 @@
 ---
+kind: essay
+lang: en
 title: "The Terminal Is the Most Honest Interface"
 date: 2026-10-18
 summary: "A command line asks for intent and gives back exactly what happened. On interfaces that refuse to flatter."

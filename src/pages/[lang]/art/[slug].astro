@@ -1,0 +1,227 @@
+---
+import { render } from "astro:content";
+import Layout from "../../../layouts/Layout.astro";
+import SyndicationLinks from "../../../components/SyndicationLinks.astro";
+import ArtLightbox from "../../../components/ArtLightbox.astro";
+import {
+	dateLabel,
+	getUi,
+	languages,
+	localeHref,
+	stars,
+	type Lang,
+} from "../../../i18n/ui";
+import { artHref, getArt, type Art } from "../../../lib/posts";
+
+export async function getStaticPaths() {
+	const paths = [];
+	for (const lang of languages) {
+		const entries = await getArt(lang);
+		for (const entry of entries) {
+			paths.push({ params: { lang, slug: entry.id }, props: { entry } });
+		}
+	}
+	return paths;
+}
+
+const lang = Astro.params.lang as Lang;
+const entry = Astro.props.entry as Art;
+const t = getUi(lang);
+const { Content } = await render(entry);
+const all = await getArt(lang);
+const position = all.findIndex((item) => item.id === entry.id);
+const newer = position > 0 ? all[position - 1] : undefined;
+const older = position < all.length - 1 ? all[position + 1] : undefined;
+
+const images =
+	entry.data.images.length > 0
+		? entry.data.images
+		: entry.data.cover
+			? [
+					{
+						src: entry.data.cover,
+						alt: entry.data.work ?? entry.data.title,
+						caption: entry.data.work,
+						medium: entry.data.medium,
+						year: entry.data.year,
+					},
+				]
+			: [];
+---
+
+<Layout
+	title={entry.data.title}
+	section={t.art.section}
+	folio="04"
+	lang={lang}
+	description={entry.data.summary || t.art.de}
+	altHref={localeHref(lang === "zh" ? "en" : "zh", "/art")}
+	mainClass="entry-page entry-page--art"
+>
+	<article class:list={["entry", "entry--review", "entry--art", `entry--${lang}`]} lang={entry.data.lang === "zh" ? "zh-CN" : "en"}>
+		<header>
+			<p class="entry-kicker">
+				<a class="entry-genre" href={localeHref(lang, "/art")}>{t.art.section}</a>
+				{entry.data.medium && (
+					<>
+						<span class="sep" aria-hidden="true">/</span>
+						<span>{entry.data.medium}</span>
+					</>
+				)}
+				{entry.data.tags.map((tag) => (
+					<>
+						<span class="sep" aria-hidden="true">·</span>
+						<span class="tag">{tag}</span>
+					</>
+				))}
+			</p>
+			<h1 class="article-title">{entry.data.title}</h1>
+			{entry.data.summary && <p class="article-dek">{entry.data.summary}</p>}
+			<p class="entry-byline">
+				<span>{entry.data.artist}</span>
+				{entry.data.work && (
+					<>
+						<span class="sep" aria-hidden="true">·</span>
+						<span>{entry.data.work}</span>
+					</>
+				)}
+				{entry.data.year && (
+					<>
+						<span class="sep" aria-hidden="true">·</span>
+						<span>{entry.data.year}</span>
+					</>
+				)}
+			</p>
+			{entry.data.rating !== undefined && (
+				<p class="review-rating review-rating--lead">
+					<span>{t.art.rating}</span>
+					<span class="review-stars">{stars(entry.data.rating)}</span>
+					<span>{entry.data.rating}/5</span>
+				</p>
+			)}
+		</header>
+
+		{images.length > 0 && (
+			<div class:list={["art-detail-wall", { "art-detail-wall--single": images.length === 1 }]}>
+				{images.map((image, index) => (
+					<figure class:list={["art-detail-piece", { "is-lead": index === 0 }]}>
+						<button
+							class="art-frame"
+							type="button"
+							data-art-src={image.src}
+							data-art-alt={image.alt}
+							data-art-caption={`${image.caption ?? entry.data.title} — ${entry.data.artist}${image.year ? `, ${image.year}` : ""}${image.medium ? ` · ${image.medium}` : ""}`}
+							aria-label={`${lang === "zh" ? "放大" : "Enlarge"} ${image.caption ?? entry.data.title}`}
+						>
+							<span class="art-mat">
+								<img src={image.src} alt={image.alt} loading={index > 0 ? "lazy" : "eager"} />
+							</span>
+						</button>
+						<figcaption class="art-caption">
+							<span class="art-caption-title">{image.caption ?? entry.data.title}</span>
+							<span class="art-caption-meta">
+								{entry.data.artist}
+								{image.year && (
+									<>
+										<span class="sep" aria-hidden="true">·</span>
+										{image.year}
+									</>
+								)}
+								{image.medium && (
+									<>
+										<span class="sep" aria-hidden="true">·</span>
+										{image.medium}
+									</>
+								)}
+							</span>
+						</figcaption>
+					</figure>
+				))}
+			</div>
+		)}
+
+		<div class="article-body review-layout">
+			<aside class="marginalia" aria-label={lang === "zh" ? "作品信息" : "Work details"}>
+				<div class="meta-block">
+					<span class="meta-label">{lang === "zh" ? "艺术家" : "Artist"}</span>
+					<span class="meta-value">{entry.data.artist}</span>
+				</div>
+				{entry.data.work && (
+					<div class="meta-block">
+						<span class="meta-label">{lang === "zh" ? "作品" : "Work"}</span>
+						<span class="meta-value">{entry.data.work}</span>
+					</div>
+				)}
+				{entry.data.medium && (
+					<div class="meta-block">
+						<span class="meta-label">{lang === "zh" ? "媒介" : "Medium"}</span>
+						<span class="meta-value">{entry.data.medium}</span>
+					</div>
+				)}
+				{entry.data.venue && (
+					<div class="meta-block">
+						<span class="meta-label">{lang === "zh" ? "地点" : "Venue"}</span>
+						<span class="meta-value">{entry.data.venue}</span>
+					</div>
+				)}
+				{entry.data.year && (
+					<div class="meta-block">
+						<span class="meta-label">{lang === "zh" ? "年份" : "Year"}</span>
+						<span class="meta-value">{entry.data.year}</span>
+					</div>
+				)}
+				<div class="meta-block">
+					<span class="meta-label">{t.entry.filed}</span>
+					<span class="meta-value">
+						<time datetime={entry.data.date.toISOString()}>{dateLabel(entry.data.date, lang)}</time>
+					</span>
+				</div>
+			</aside>
+			<div class="prose" lang={entry.data.lang === "zh" ? "zh-CN" : "en"}>
+				<Content />
+			</div>
+		</div>
+
+		{entry.data.links.length > 0 && (
+			<section class="review-links" aria-label={t.entry.externalLinks}>
+				<p class="sync-label">{t.entry.externalLinks}</p>
+				<ul class="sync-links">
+					{entry.data.links.map((link) => (
+						<li><a href={link.url} target="_blank">{link.label} ↗</a></li>
+					))}
+				</ul>
+			</section>
+		)}
+
+		<SyndicationLinks links={entry.data.syndication} lang={lang} />
+
+		<footer class="article-foot">
+			<nav class="entry-nav" aria-label={t.art.all}>
+				{older ? (
+					<a href={artHref(older, lang)}>
+						<span class="dir">← {t.entry.older}</span>
+						<span class="title">{older.data.title}</span>
+					</a>
+				) : (
+					<a href={localeHref(lang, "/art")}>
+						<span class="dir">← {t.entry.backToArt}</span>
+						<span class="title">{t.art.all}</span>
+					</a>
+				)}
+				{newer ? (
+					<a class="next" href={artHref(newer, lang)}>
+						<span class="dir">{t.entry.newer} →</span>
+						<span class="title">{newer.data.title}</span>
+					</a>
+				) : (
+					<a class="next" href={localeHref(lang, "/art")}>
+						<span class="dir">{t.entry.backToArt} →</span>
+						<span class="title">{t.art.all}</span>
+					</a>
+				)}
+			</nav>
+		</footer>
+	</article>
+
+	<ArtLightbox lang={lang} />
+</Layout>

@@ -1,4 +1,6 @@
 ---
+kind: essay
+lang: en
 title: "Rust, Read Slowly"
 date: 2026-08-30
 summary: "Ownership is a reading discipline before it is a memory model. Notes from a year of letting the compiler finish a sentence."

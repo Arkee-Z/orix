@@ -1,4 +1,6 @@
 ---
+kind: essay
+lang: en
 title: "Notes from a Silent Build"
 date: 2026-06-08
 summary: "A green pipeline is not the same as a good day's work. On deleting, waiting, and the ritual of shipping something small."

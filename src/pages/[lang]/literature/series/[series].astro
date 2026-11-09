@@ -1,0 +1,97 @@
+---
+import Layout from "../../../../layouts/Layout.astro";
+import GenreNav from "../../../../components/GenreNav.astro";
+import { getUi, languages, localeHref, dateLabel, type Lang } from "../../../../i18n/ui";
+import {
+	chapterLabel,
+	getPosts,
+	groupSeries,
+	postHref,
+	seriesHref,
+} from "../../../../lib/posts";
+
+export async function getStaticPaths() {
+	const paths = [];
+	for (const lang of languages) {
+		const posts = await getPosts(lang);
+		for (const group of groupSeries(posts)) {
+			paths.push({
+				params: { lang, series: group.series },
+				props: { group, lang },
+			});
+		}
+	}
+	return paths;
+}
+
+const lang = Astro.params.lang as Lang;
+const { group } = Astro.props;
+const t = getUi(lang);
+const kind = group.kind;
+const isPoetry = kind === "poem";
+const first = group.entries[0];
+const categoryPath = isPoetry ? "/literature/poetry" : "/literature/fiction";
+const categoryLabel =
+	lang === "zh"
+		? `02 — ${isPoetry ? "诗" : "小说"}`
+		: `02 — ${isPoetry ? "Poetry" : "Fiction"}`;
+---
+
+<Layout
+	title={group.title}
+	section={t.literature.section}
+	folio="02"
+	lang={lang}
+	description={first?.data.summary || t.literature.de}
+	altHref={localeHref(lang === "zh" ? "en" : "zh", categoryPath)}
+>
+	<header class="page-head-block">
+		<p class="imprint">{categoryLabel}</p>
+		<h1 class="page-title">{group.title}</h1>
+		<p class="page-dek">
+			{first?.data.summary ||
+				(isPoetry
+					? lang === "zh" ? "一部诗集。" : "A poetry collection."
+					: lang === "zh" ? "一部小说。" : "A novel in chapters.")}
+		</p>
+	</header>
+
+	<div class="series-head-actions">
+		<a class="text-link" href={postHref(first, lang)}>
+			{isPoetry ? t.entry.startPoetry : t.entry.startReading}{" "}
+			<span class="arrow" aria-hidden="true">→</span>
+		</a>
+		<a class="text-link series-back" href={localeHref(lang, categoryPath)}>
+			← {isPoetry ? (lang === "zh" ? "返回诗" : "Back to poetry") : t.literature.back}
+		</a>
+	</div>
+
+	<GenreNav lang={lang} active={kind} />
+
+	<ol class="chapter-list">
+		{
+			group.entries.map((entry, index) => (
+				<li class="chapter-row">
+					<a href={postHref(entry, lang)}>
+						<span class="chapter-no">
+							{isPoetry
+								? String(index + 1).padStart(2, "0")
+								: chapterLabel(entry, lang) || String(index + 1).padStart(2, "0")}
+						</span>
+						<span class="chapter-main">
+							<span class="chapter-title">{entry.data.title}</span>
+							{entry.data.summary && (
+								<span class="chapter-summary">{entry.data.summary}</span>
+							)}
+						</span>
+						<time class="chapter-date" datetime={entry.data.date.toISOString()}>
+							{dateLabel(entry.data.date, lang)}
+						</time>
+					</a>
+				</li>
+			))
+		}
+	</ol>
+
+	<p class="end-mark">— {lang === "zh" ? "待续" : "to be continued"} —</p>
+</Layout>

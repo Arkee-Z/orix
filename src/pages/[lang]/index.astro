@@ -1,0 +1,219 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { site } from "../../data/site";
+import {
+	languages,
+	getUi,
+	localeHref,
+	dateLabel,
+	type Lang,
+} from "../../i18n/ui";
+import {
+	getArt,
+	getMusic,
+	getPosts,
+	postHref,
+	musicHref,
+	artHref,
+	genreMeta,
+	getTracks,
+} from "../../lib/posts";
+
+export function getStaticPaths() {
+	return languages.map((lang) => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Lang;
+const t = getUi(lang);
+const [posts, music, art, tracks] = await Promise.all([
+	getPosts(lang),
+	getMusic(lang),
+	getArt(lang),
+	getTracks(lang),
+]);
+
+type Recent = {
+	title: string;
+	date: Date;
+	href: string;
+	label: string;
+	summary: string;
+};
+
+const recent: Recent[] = [
+	...posts.map((entry) => ({
+		title: entry.data.title,
+		date: entry.data.date,
+		href: postHref(entry, lang),
+		label: genreMeta(entry.data.kind)[lang],
+		summary: entry.data.summary,
+	})),
+	...music.map((entry) => ({
+		title: entry.data.title,
+		date: entry.data.date,
+		href: musicHref(entry, lang),
+		label: t.nav.music,
+		summary: entry.data.summary,
+	})),
+	...art.map((entry) => ({
+		title: entry.data.title,
+		date: entry.data.date,
+		href: artHref(entry, lang),
+		label: t.nav.art,
+		summary: entry.data.summary,
+	})),
+]
+	.sort((a, b) => b.date.valueOf() - a.date.valueOf())
+	.slice(0, 3);
+
+const feature = recent[0];
+const more = recent.slice(1);
+
+const departments = [
+	{
+		no: "01",
+		path: "/literature",
+		name: t.nav.literature,
+		other: lang === "zh" ? "Literature" : "文学",
+		dek: t.literature.de,
+		count: posts.length,
+		unit:
+			lang === "zh" ? "篇" : posts.length === 1 ? "piece" : "pieces",
+	},
+	{
+		no: "02",
+		path: "/music",
+		name: t.nav.music,
+		other: lang === "zh" ? "Music" : "音乐",
+		dek: t.music.de,
+		count: tracks.length,
+		unit:
+			lang === "zh" ? "曲" : tracks.length === 1 ? "track" : "tracks",
+	},
+	{
+		no: "03",
+		path: "/art",
+		name: t.nav.art,
+		other: lang === "zh" ? "Art" : "美术",
+		dek: t.art.de,
+		count: art.length,
+		unit:
+			lang === "zh" ? "篇" : art.length === 1 ? "piece" : "pieces",
+	},
+];
+---
+
+<Layout
+	section={t.nav.index}
+	folio="01"
+	lang={lang}
+	altHref={localeHref(lang === "zh" ? "en" : "zh", "/")}
+	mainClass="cover-page"
+>
+	<div class="cover">
+		<div class="cover-kicker">
+			<span>{t.home.notebook}</span>
+			<span class="dot" aria-hidden="true">·</span>
+			<span>{t.volume}</span>
+			<span class="dot" aria-hidden="true">·</span>
+			<span>{site.year}</span>
+		</div>
+
+		<div class="cover-grid">
+			<header class="cover-lead">
+				<h1 class="cover-word">Orix</h1>
+				<p class="cover-cn">
+					{lang === "zh" ? "文艺志" : "Journal"}
+					<span>{lang === "zh" ? "文学 · 音乐 · 美术" : "Literature · Music · Art"}</span>
+				</p>
+				<p class="cover-statement">{t.home.role}</p>
+				<p class="cover-intro">{t.home.intro}</p>
+				<p class="cover-editor">
+					{t.home.name} <span aria-hidden="true">·</span>
+					{lang === "zh" ? "主编" : "Editor"}
+				</p>
+			</header>
+
+			<aside class="cover-feature" aria-label={t.home.selected}>
+				<div class="cover-label">
+					<span>{t.home.selected}</span>
+					<span>{lang === "zh" ? "本期" : "Featured"}</span>
+				</div>
+
+				{
+					feature ? (
+						<a class="feature" href={feature.href}>
+							<span class="feature-kind">{feature.label}</span>
+							<h2 class="feature-title">{feature.title}</h2>
+							{feature.summary && <p class="feature-dek">{feature.summary}</p>}
+							<span class="feature-foot">
+								<time datetime={feature.date.toISOString()}>
+									{dateLabel(feature.date, lang)}
+								</time>
+								<span class="feature-cta">
+									{lang === "zh" ? "阅读" : "Read"} <span aria-hidden="true">→</span>
+								</span>
+							</span>
+						</a>
+					) : (
+						<p class="empty-note">{t.home.empty}</p>
+					)
+				}
+
+				{
+					more.length > 0 && (
+						<div class="cover-more">
+							<p class="cover-more-label">
+								{lang === "zh" ? "另选" : "Also in this issue"}
+							</p>
+							{more.map((entry) => (
+								<a class="cover-more-item" href={entry.href}>
+									<span class="cover-more-title">{entry.title}</span>
+									<span class="cover-more-meta">
+										{entry.label}
+										<span aria-hidden="true"> · </span>
+										{dateLabel(entry.date, lang)}
+									</span>
+								</a>
+							))}
+						</div>
+					)
+				}
+			</aside>
+		</div>
+
+		<section class="departments" aria-label={t.home.sections}>
+			<div class="list-head">
+				<span>{t.home.sections}</span>
+				<span>{lang === "zh" ? "Departments" : "栏目"}</span>
+			</div>
+
+			<ol class="department-list">
+				{
+					departments.map((department) => (
+						<li>
+							<a class="department-row" href={localeHref(lang, department.path)}>
+								<span class="department-no">{department.no}</span>
+								<span class="department-name">
+									{department.name}
+									<em>{department.other}</em>
+								</span>
+								<span class="department-dek">{department.dek}</span>
+								<span class="department-count">
+									{department.count} {department.unit}
+								</span>
+								<span class="department-arrow" aria-hidden="true">→</span>
+							</a>
+						</li>
+					))
+				}
+			</ol>
+		</section>
+
+		<p class="cover-colophon">
+			<span>{t.imprint} · {t.volume}</span>
+			<span>{t.location}</span>
+			<span>{t.since}</span>
+		</p>
+	</div>
+</Layout>
